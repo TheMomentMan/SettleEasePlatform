@@ -1,0 +1,210 @@
+<!-- This is a simple HTML template for a web application called Settleease. It includes a header, sidebar, map section, and chatbox. The layout is styled using CSS to create a clean and user-friendly interface. The sidebar allows users to input their city, preferences, and categories, while the map section displays pins for various locations and a list of results. The chatbox enables users to ask questions and send messages. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settleease</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f6f0e1;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background-color: #123c1c;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-content {
+      display: flex;
+      flex: 1;
+      margin-left: 20px;
+      /*padding: 1rem;*/
+    }
+
+    .sidebar {
+      background-color: #d7d2ab;
+      padding: 1rem;
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      /* margin-left: 20px; */
+    }
+
+    input[type="text"] {
+      padding: 0.5rem;
+      border: none;
+      border-radius: 4px;
+    }
+
+    .checkboxes label {
+      display: block;
+      margin: 0.2rem 0;
+    }
+
+    .find-btn {
+      background-color: #123c1c;
+      color: white;
+      padding: 0.7rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .map-section {
+      flex: 1;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .map-placeholder {
+      background-color: #f2f1e7;
+      border: 1px solid #ccc;
+      height: 200px;
+      position: relative;
+    }
+
+    .pin {
+      width: 20px;
+      height: 30px;
+      background-color: #1a4e2d;
+      border-radius: 50% 50% 50% 0;
+      position: absolute;
+      transform: rotate(-45deg);
+      top: 30%;
+      left: 30%;
+    }
+
+    .results .card {
+      background-color: white;
+      padding: 0.5rem;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .chatbox {
+      background-color: #e9e1b8;
+      width: 250px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .chat-bubble {
+      background-color: #123c1c;
+      color: white;
+      padding: 0.5rem;
+      border-radius: 10px;
+      max-width: 90%;
+    }
+
+    .chatbox input {
+      padding: 0.5rem;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+    }
+
+    .send-btn {
+      background-color: #123c1c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 0.5rem;
+      cursor: pointer;
+      align-self: flex-end;
+    }
+
+    .user-icon {
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Settleease</h1>
+      <div class="user-icon">👤</div>
+    </header>
+
+    <div class="main-content">
+      <aside class="sidebar">
+        <label>City</label>
+        <input type="text" value="Cambridge" />
+        <!-- How to move the side bar in by a few px -->
+
+        <label>Zip Code</label>
+        <input type="text" value="02142" />
+
+        <label>Preferences</label>
+        <input type="text" value="" />
+        <!-- Key information for search -->
+
+
+        <label>Categories</label>
+        <div class="checkboxes">
+          <label><input type="checkbox" unchecked /> Schools</label>
+          <label><input type="checkbox" unchecked /> Worship</label>
+          <label><input type="checkbox" unchecked /> Stores</label>
+          <label><input type="checkbox" unchecked /> Restaurants</label>
+          <label><input type="checkbox" checked /> Salons</label>
+          <label><input type="checkbox" checked /> Sports</label>
+        </div>
+
+        <button class="find-btn">Find Places</button>
+      </aside>
+
+      <section class="map-section">
+        <div class="map-placeholder">
+          <div class="pin" style="top: 30%; left: 30%;"></div>
+          <div class="pin" style="top: 50%; left: 40%;"></div>
+          <div class="pin" style="top: 60%; left: 55%;"></div>
+          <div class="pin" style="top: 40%; left: 60%;"></div>
+          <div class="pin" style="top: 35%; left: 45%;"></div>
+          <div class="pin" style="top: 55%; left: 35%;"></div>
+        </div>
+
+        <!-- This section lists the results that are optained -->
+
+        <div class="results">
+          <div class="card">
+            <strong>Garfield School</strong><br />
+            School ⭐⭐⭐⭐ – 1.5 mi
+          </div>
+          <div class="card">
+            <strong>Temple Beth-El</strong><br />
+            Worship ⭐⭐⭐⭐ – 1.5 mi
+          </div>
+          <div class="card">
+            <strong>Green Earth Market</strong><br />
+            Grocery ⭐⭐⭐½ – 1 mi
+          </div>
+        </div>
+      </section>
+
+      <!-- This section is the chatbox that allows users to ask questions and send messages -->
+      <aside class="chatbox">
+        <p class="chat-bubble">Where can I find a school?</p>
+        <input type="text" placeholder="Enter a message" />
+        <button class="send-btn">➤</button>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>

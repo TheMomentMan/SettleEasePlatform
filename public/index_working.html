@@ -10,11 +10,13 @@
       font-family: Arial, sans-serif;
       background-color: #f6f0e1;
     }
+
     .container {
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
+
     header {
       background-color: #123c1c;
       color: white;
@@ -23,11 +25,13 @@
       justify-content: space-between;
       align-items: center;
     }
+
     .main-content {
       display: flex;
       flex: 1;
       margin-left: 20px;
     }
+
     .sidebar {
       background-color: #d7d2ab;
       padding: 1rem;
@@ -36,22 +40,27 @@
       flex-direction: column;
       gap: 10px;
     }
+
     input[type="text"] {
       padding: 0.5rem;
       border: none;
       border-radius: 4px;
     }
+
     .checkboxes label {
       display: block;
       margin: 0.2rem 0;
     }
+
     .subcategory {
       margin-left: 20px;
       margin-top: 5px;
     }
+
     .hidden {
       display: none;
     }
+
     .find-btn {
       background-color: #123c1c;
       color: white;
@@ -60,6 +69,7 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     .map-section {
       flex: 1;
       padding: 1rem;
@@ -67,12 +77,14 @@
       flex-direction: column;
       gap: 1rem;
     }
+
     .map-placeholder {
       background-color: #f2f1e7;
       border: 1px solid #ccc;
       height: 200px;
       position: relative;
     }
+
     .pin {
       width: 20px;
       height: 30px;
@@ -81,11 +93,13 @@
       position: absolute;
       transform: rotate(-45deg);
     }
+
     .results .card {
       background-color: white;
       padding: 0.5rem;
       border-bottom: 1px solid #ccc;
     }
+
     .chatbox {
       background-color: #e9e1b8;
       width: 250px;
@@ -95,6 +109,7 @@
       gap: 10px;
       position: relative;
     }
+
     .chat-bubble {
       background-color: #123c1c;
       color: white;
@@ -102,11 +117,13 @@
       border-radius: 10px;
       max-width: 90%;
     }
+
     .chatbox input {
       padding: 0.5rem;
       border: 1px solid #aaa;
       border-radius: 5px;
     }
+
     .send-btn {
       background-color: #123c1c;
       color: white;
@@ -116,6 +133,7 @@
       cursor: pointer;
       align-self: flex-end;
     }
+
     .user-icon {
       font-size: 1.5rem;
     }
@@ -142,9 +160,7 @@
         <label>Categories</label>
         <div class="checkboxes">
           <label>
-            <input type="checkbox"
-                   id="schools-checkbox"
-                   onchange="toggleDropdown(this,'school-options'); removeFromPreferences('school-options')" />
+            <input type="checkbox" id="schools-checkbox" onchange="toggleDropdown(this,'school-options'); removeFromPreferences('school-options')"" />
             Schools
           </label>
           <div id="school-options" class="subcategory hidden">
@@ -157,18 +173,10 @@
             </select>
           </div>
 
+          <label><input type="checkbox" /> Worship</label>
+          <label><input type="checkbox" /> Stores</label>
           <label>
-            <input type="checkbox" /> Worship
-          </label>
-
-          <label>
-            <input type="checkbox" /> Stores
-          </label>
-
-          <label>
-            <input type="checkbox"
-                   id="restaurants-checkbox"
-                   onchange="toggleDropdown(this,'restaurant-options'); removeFromPreferences('restaurant-options')" />
+            <input type="checkbox" id="Rstaurants-checkbox" onchange="toggleDropdown(this,'restaurant-options'); removeFromPreferences('restaurant-options')""/> 
             Restaurants
           </label>
           <div id="restaurant-options" class="subcategory hidden">
@@ -179,13 +187,12 @@
               <option value="african">African</option>
               <option value="buffet">Buffet</option>
             </select>
-          </div>
-
+            
+        </div>
           <label><input type="checkbox" checked /> Salons</label>
           <label><input type="checkbox" checked /> Sports</label>
 
-          <button id="ask-gpt-btn" class="find-btn">Recommend</button>
-        </div>
+        <button id="ask-gpt-btn" class="find-btn">Recommend</button>
       </aside>
 
       <section class="map-section">
@@ -223,6 +230,12 @@
   </div>
 
   <script>
+    /* function toggleDropdown(id) {
+      const checkbox = document.getElementById('schools-checkbox');
+      const dropdown = document.getElementById(id);
+      dropdown.classList.toggle('hidden', !checkbox.checked);
+    } */
+
     function toggleDropdown(checkboxElement, dropdownId) {
       const dropdown = document.getElementById(dropdownId);
       dropdown.classList.toggle('hidden', !checkboxElement.checked);
@@ -231,55 +244,83 @@
     function addToPreferences(selectElement) {
       const value = selectElement.value.trim();
       if (!value) return;
+
       const category = selectElement.getAttribute("data-category");
       const entry = `${category}: ${value}`;
+
       const prefsInput = document.getElementById('preferences-input');
       let current = prefsInput.value.split(',').map(v => v.trim()).filter(v => v);
+
+      // Remove old entry from same category, if it exists
       current = current.filter(item => !item.startsWith(`${category}:`));
+
+      // Add new entry
       current.push(entry);
       prefsInput.value = current.join(', ');
     }
+
 
     function removeFromPreferences(dropdownId) {
       const dropdown = document.getElementById(dropdownId);
       const select = dropdown.querySelector('select');
       const value = select.value.trim();
       const category = select.getAttribute("data-category");
+
       if (!value || !category) return;
+
       const prefsInput = document.getElementById('preferences-input');
       let current = prefsInput.value.split(',').map(v => v.trim()).filter(v => v);
+
+      // Remove only the matching "Category: Value" entry
       current = current.filter(item => item !== `${category}: ${value}`);
+
       prefsInput.value = current.join(', ');
+
+      // Reset the dropdown
       select.value = "";
     }
 
     document.getElementById('ask-gpt-btn').addEventListener('click', async () => {
-      const city = document.querySelector('input[value="Cambridge"]').value;
-      const zip = document.querySelector('input[value="02142"]').value;
-      const preferences = document.getElementById('preferences-input').value;
-      console.log("🔍 Button clicked! City:", city, "Zip:", zip, "Prefs:", preferences);
+    const city = document.querySelector('input[value="Cambridge"]').value;
+    const zip = document.querySelector('input[value="02142"]').value;
+    const preferences = document.getElementById('preferences-input').value;
 
-      const prompt = `Find helpful places for someone settling into ${city}, ZIP code ${zip}. They are interested in: ${preferences}. Give helpful and clear suggestions.`;
-      //const prompt ="List all the cardinals of the catholic church in Africa, their ages and countries"
-      const apiBase = 'https://obscure-halibut-75r4v5vjp9pfw5q6-3000.app.github.dev';
+    const prompt = `Find helpful places for someone settling into ${city}, ZIP code ${zip}. They are interested in: ${preferences}. Give helpful and clear suggestions.`;
 
-      try {
-        const response = await fetch(`${apiBase}/ask-gpt`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt })
-        });
-        console.log('Raw response:', response);
-        const data = await response.json();
-        const chatbox = document.querySelector('.chatbox');
-        const replyBubble = document.createElement('p');
-        replyBubble.className = 'chat-bubble';
-        replyBubble.textContent = data.reply;
-        chatbox.appendChild(replyBubble);
-      } catch (error) {
-        console.error('Error talking to GPT:', error);
-      }
-    });
+    //const apiBase = window.location.origin;
+    //const apiBase='https://obscure-halibut-75r4v5vjp9pfw5q6-5500.app.github.dev/public/'
+    const apiBase = 'https://obscure-halibut-75r4v5vjp9pfw5q6-3000.app.github.dev';
+
+    try {
+      /* const response = await fetch('http://localhost:3000/ask-gpt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      }); */
+
+      
+
+      const response = await fetch(`${apiBase}/ask-gpt`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+
+      console.log('Raw response:', response);
+
+      const data = await response.json();
+
+      // Display the response in the chatbox
+      const chatbox = document.querySelector('.chatbox');
+      const replyBubble = document.createElement('p');
+      replyBubble.className = 'chat-bubble';
+      replyBubble.textContent = data.reply;
+
+      chatbox.appendChild(replyBubble);
+    } catch (error) {
+      console.error('Error talking to GPT:', error);
+    }
+  });
   </script>
 </body>
 </html>
