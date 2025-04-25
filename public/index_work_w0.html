@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settleease</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f6f0e1;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background-color: #123c1c;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-content {
+      display: flex;
+      flex: 1;
+      margin-left: 20px;
+    }
+
+    .sidebar {
+      background-color: #d7d2ab;
+      padding: 1rem;
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      padding: 0.5rem;
+      border: none;
+      border-radius: 4px;
+    }
+
+    .checkboxes label {
+      display: block;
+      margin: 0.2rem 0;
+    }
+
+    .subcategory {
+      margin-left: 20px;
+      margin-top: 5px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .find-btn {
+      background-color: #123c1c;
+      color: white;
+      padding: 0.7rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .map-section {
+      flex: 1;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .map-placeholder {
+      background-color: #f2f1e7;
+      border: 1px solid #ccc;
+      height: 200px;
+      position: relative;
+    }
+
+    .pin {
+      width: 20px;
+      height: 30px;
+      background-color: #1a4e2d;
+      border-radius: 50% 50% 50% 0;
+      position: absolute;
+      transform: rotate(-45deg);
+    }
+
+    .results .card {
+      background-color: white;
+      padding: 0.5rem;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .chatbox {
+      background-color: #e9e1b8;
+      width: 250px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .chat-bubble {
+      background-color: #123c1c;
+      color: white;
+      padding: 0.5rem;
+      border-radius: 10px;
+      max-width: 90%;
+    }
+
+    .chatbox input {
+      padding: 0.5rem;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+    }
+
+    .send-btn {
+      background-color: #123c1c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 0.5rem;
+      cursor: pointer;
+      align-self: flex-end;
+    }
+
+    .user-icon {
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Settleease</h1>
+      <div class="user-icon">👤</div>
+    </header>
+
+    <div class="main-content">
+      <aside class="sidebar">
+        <label>City</label>
+        <input type="text" value="Cambridge" />
+
+        <label>Zip Code</label>
+        <input type="text" value="02142" />
+
+        <label>Preferences</label>
+        <input type="text" id="preferences-input" value="" readonly />
+
+        <label>Categories</label>
+        <div class="checkboxes">
+          <label>
+            <input type="checkbox" id="schools-checkbox" onchange="toggleDropdown(this,'school-options'); removeFromPreferences('school-options')"" />
+            Schools
+          </label>
+          <div id="school-options" class="subcategory hidden">
+            <select data-category="school" onchange="addToPreferences(this)">
+              <option value="">Select school type</option>
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+              <option value="mission">Mission</option>
+              <option value="church">Church-Owned</option>
+            </select>
+          </div>
+
+          <label><input type="checkbox" /> Worship</label>
+          <label><input type="checkbox" /> Stores</label>
+          <label>
+            <input type="checkbox" id="Rstaurants-checkbox" onchange="toggleDropdown(this,'restaurant-options'); removeFromPreferences('restaurant-options')""/> 
+            Restaurants
+          </label>
+          <div id="restaurant-options" class="subcategory hidden">
+            <select data-category="restaurant" onchange="addToPreferences(this)">
+              <option value="">Select restaurant type</option>
+              <option value="fast-food">Fast Food</option>
+              <option value="fine-dining">Fine Dining</option>
+              <option value="african">African</option>
+              <option value="buffet">Buffet</option>
+            </select>
+            
+        </div>
+          <label><input type="checkbox" checked /> Salons</label>
+          <label><input type="checkbox" checked /> Sports</label>
+
+        <button id="ask-gpt-btn" class="find-btn">Recommend</button>
+      </aside>
+
+      <section class="map-section">
+        <div class="map-placeholder">
+          <div class="pin" style="top: 30%; left: 30%;"></div>
+          <div class="pin" style="top: 50%; left: 40%;"></div>
+          <div class="pin" style="top: 60%; left: 55%;"></div>
+          <div class="pin" style="top: 40%; left: 60%;"></div>
+          <div class="pin" style="top: 35%; left: 45%;"></div>
+          <div class="pin" style="top: 55%; left: 35%;"></div>
+        </div>
+
+        <div class="results">
+          <div class="card">
+            <strong>Garfield School</strong><br />
+            School ⭐⭐⭐⭐ – 1.5 mi
+          </div>
+          <div class="card">
+            <strong>Temple Beth-El</strong><br />
+            Worship ⭐⭐⭐⭐ – 1.5 mi
+          </div>
+          <div class="card">
+            <strong>Green Earth Market</strong><br />
+            Grocery ⭐⭐⭐½ – 1 mi
+          </div>
+        </div>
+      </section>
+
+      <aside class="chatbox">
+        <p class="chat-bubble">Where can I find a school?</p>
+        <input type="text" placeholder="Enter a message" />
+        <button class="send-btn">➤</button>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    /* function toggleDropdown(id) {
+      const checkbox = document.getElementById('schools-checkbox');
+      const dropdown = document.getElementById(id);
+      dropdown.classList.toggle('hidden', !checkbox.checked);
+    } */
+
+    function toggleDropdown(checkboxElement, dropdownId) {
+      const dropdown = document.getElementById(dropdownId);
+      dropdown.classList.toggle('hidden', !checkboxElement.checked);
+    }
+
+    function addToPreferences(selectElement) {
+      const value = selectElement.value.trim();
+      if (!value) return;
+
+      const category = selectElement.getAttribute("data-category");
+      const entry = `${category}: ${value}`;
+
+      const prefsInput = document.getElementById('preferences-input');
+      let current = prefsInput.value.split(',').map(v => v.trim()).filter(v => v);
+
+      // Remove old entry from same category, if it exists
+      current = current.filter(item => !item.startsWith(`${category}:`));
+
+      // Add new entry
+      current.push(entry);
+      prefsInput.value = current.join(', ');
+    }
+
+
+    function removeFromPreferences(dropdownId) {
+      const dropdown = document.getElementById(dropdownId);
+      const select = dropdown.querySelector('select');
+      const value = select.value.trim();
+      const category = select.getAttribute("data-category");
+
+      if (!value || !category) return;
+
+      const prefsInput = document.getElementById('preferences-input');
+      let current = prefsInput.value.split(',').map(v => v.trim()).filter(v => v);
+
+      // Remove only the matching "Category: Value" entry
+      current = current.filter(item => item !== `${category}: ${value}`);
+
+      prefsInput.value = current.join(', ');
+
+      // Reset the dropdown
+      select.value = "";
+    }
+
+    document.getElementById('ask-gpt-btn').addEventListener('click', async () => {
+    const city = document.querySelector('input[value="Cambridge"]').value;
+    const zip = document.querySelector('input[value="02142"]').value;
+    const preferences = document.getElementById('preferences-input').value;
+
+    const prompt = `Find helpful places for someone settling into ${city}, ZIP code ${zip}. They are interested in: ${preferences}. Give helpful and clear suggestions.`;
+
+    //const apiBase = window.location.origin;
+    //const apiBase='https://obscure-halibut-75r4v5vjp9pfw5q6-5500.app.github.dev/public/'
+    const apiBase = 'https://obscure-halibut-75r4v5vjp9pfw5q6-3000.app.github.dev';
+
+    try {
+      /* const response = await fetch('http://localhost:3000/ask-gpt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      }); */
+
+      
+
+      const response = await fetch(`${apiBase}/ask-gpt`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+
+      console.log('Raw response:', response);
+
+      const data = await response.json();
+
+      // Display the response in the chatbox
+      const chatbox = document.querySelector('.chatbox');
+      const replyBubble = document.createElement('p');
+      replyBubble.className = 'chat-bubble';
+      replyBubble.textContent = data.reply;
+
+      chatbox.appendChild(replyBubble);
+    } catch (error) {
+      console.error('Error talking to GPT:', error);
+    }
+  });
+  </script>
+</body>
+</html>

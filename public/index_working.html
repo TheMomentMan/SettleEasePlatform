@@ -4,19 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Settleease</title>
+
+  <!-- Leaflet CSS (with SRI + anonymous CORS) -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin="anonymous"
+  />
+
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #f6f0e1;
     }
-
     .container {
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
-
     header {
       background-color: #123c1c;
       color: white;
@@ -25,13 +31,11 @@
       justify-content: space-between;
       align-items: center;
     }
-
     .main-content {
       display: flex;
       flex: 1;
       margin-left: 20px;
     }
-
     .sidebar {
       background-color: #d7d2ab;
       padding: 1rem;
@@ -40,27 +44,22 @@
       flex-direction: column;
       gap: 10px;
     }
-
     input[type="text"] {
       padding: 0.5rem;
       border: none;
       border-radius: 4px;
     }
-
     .checkboxes label {
       display: block;
       margin: 0.2rem 0;
     }
-
     .subcategory {
       margin-left: 20px;
       margin-top: 5px;
     }
-
     .hidden {
       display: none;
     }
-
     .find-btn {
       background-color: #123c1c;
       color: white;
@@ -68,8 +67,8 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin-top: 0.5rem;
     }
-
     .map-section {
       flex: 1;
       padding: 1rem;
@@ -77,29 +76,11 @@
       flex-direction: column;
       gap: 1rem;
     }
-
-    .map-placeholder {
-      background-color: #f2f1e7;
-      border: 1px solid #ccc;
-      height: 200px;
-      position: relative;
-    }
-
-    .pin {
-      width: 20px;
-      height: 30px;
-      background-color: #1a4e2d;
-      border-radius: 50% 50% 50% 0;
-      position: absolute;
-      transform: rotate(-45deg);
-    }
-
     .results .card {
       background-color: white;
       padding: 0.5rem;
       border-bottom: 1px solid #ccc;
     }
-
     .chatbox {
       background-color: #e9e1b8;
       width: 250px;
@@ -109,7 +90,6 @@
       gap: 10px;
       position: relative;
     }
-
     .chat-bubble {
       background-color: #123c1c;
       color: white;
@@ -117,13 +97,11 @@
       border-radius: 10px;
       max-width: 90%;
     }
-
     .chatbox input {
       padding: 0.5rem;
       border: 1px solid #aaa;
       border-radius: 5px;
     }
-
     .send-btn {
       background-color: #123c1c;
       color: white;
@@ -133,12 +111,13 @@
       cursor: pointer;
       align-self: flex-end;
     }
-
     .user-icon {
       font-size: 1.5rem;
     }
   </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
   <div class="container">
     <header>
@@ -147,6 +126,7 @@
     </header>
 
     <div class="main-content">
+      <!-- SIDEBAR -->
       <aside class="sidebar">
         <label>City</label>
         <input type="text" value="Cambridge" />
@@ -155,12 +135,16 @@
         <input type="text" value="02142" />
 
         <label>Preferences</label>
-        <input type="text" id="preferences-input" value="" readonly />
+        <input type="text" id="preferences-input" readonly />
 
         <label>Categories</label>
         <div class="checkboxes">
           <label>
-            <input type="checkbox" id="schools-checkbox" onchange="toggleDropdown(this,'school-options'); removeFromPreferences('school-options')"" />
+            <input
+              type="checkbox"
+              id="schools-checkbox"
+              onchange="toggleDropdown(this,'school-options'); removeFromPreferences('school-options')"
+            />
             Schools
           </label>
           <div id="school-options" class="subcategory hidden">
@@ -175,8 +159,13 @@
 
           <label><input type="checkbox" /> Worship</label>
           <label><input type="checkbox" /> Stores</label>
+
           <label>
-            <input type="checkbox" id="Rstaurants-checkbox" onchange="toggleDropdown(this,'restaurant-options'); removeFromPreferences('restaurant-options')""/> 
+            <input
+              type="checkbox"
+              id="restaurants-checkbox"
+              onchange="toggleDropdown(this,'restaurant-options'); removeFromPreferences('restaurant-options')"
+            />
             Restaurants
           </label>
           <div id="restaurant-options" class="subcategory hidden">
@@ -187,25 +176,20 @@
               <option value="african">African</option>
               <option value="buffet">Buffet</option>
             </select>
-            
-        </div>
+          </div>
+
           <label><input type="checkbox" checked /> Salons</label>
           <label><input type="checkbox" checked /> Sports</label>
 
-        <button id="ask-gpt-btn" class="find-btn">Recommend</button>
+          <button id="ask-gpt-btn" class="find-btn">Recommend</button>
+        </div>
       </aside>
 
+      <!-- MAP & RESULTS -->
       <section class="map-section">
-        <div class="map-placeholder">
-          <div class="pin" style="top: 30%; left: 30%;"></div>
-          <div class="pin" style="top: 50%; left: 40%;"></div>
-          <div class="pin" style="top: 60%; left: 55%;"></div>
-          <div class="pin" style="top: 40%; left: 60%;"></div>
-          <div class="pin" style="top: 35%; left: 45%;"></div>
-          <div class="pin" style="top: 55%; left: 35%;"></div>
-        </div>
-
-        <div class="results">
+        <div id="map" style="flex:1; border:1px solid #ccc;"></div>
+        <div id="results" class="results"></div>
+        <!-- <div class="results">
           <div class="card">
             <strong>Garfield School</strong><br />
             School ⭐⭐⭐⭐ – 1.5 mi
@@ -218,109 +202,263 @@
             <strong>Green Earth Market</strong><br />
             Grocery ⭐⭐⭐½ – 1 mi
           </div>
-        </div>
+        </div> -->
       </section>
 
+      <!-- CHATBOX -->
       <aside class="chatbox">
         <p class="chat-bubble">Where can I find a school?</p>
         <input type="text" placeholder="Enter a message" />
-        <button class="send-btn">➤</button>
+        <button id="starterbtn" class="send-btn">➤</button>
       </aside>
     </div>
   </div>
 
+  <!-- Leaflet JS (still in head or here—OK as long as map init is after) -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    crossorigin="anonymous"
+  ></script>
+
+  <!-- YOUR APP LOGIC -->
   <script>
-    /* function toggleDropdown(id) {
-      const checkbox = document.getElementById('schools-checkbox');
-      const dropdown = document.getElementById(id);
-      dropdown.classList.toggle('hidden', !checkbox.checked);
-    } */
+    let currentMarker = null;
+    function attachRowClickHandlers() {
+      document
+        .querySelectorAll('#results table tbody tr')
+        .forEach(row => {
+          row.style.cursor = 'pointer';
+          row.addEventListener('click', () => {
+            const cells = row.cells;
+            const lat   = parseFloat(cells[3].textContent);
+            const lng   = parseFloat(cells[4].textContent);
+            const name  = cells[0].textContent;
 
-    function toggleDropdown(checkboxElement, dropdownId) {
-      const dropdown = document.getElementById(dropdownId);
-      dropdown.classList.toggle('hidden', !checkboxElement.checked);
+            // remove old marker
+            if (currentMarker) map.removeLayer(currentMarker);
+
+            // add new marker + popup
+            currentMarker = L.marker([lat, lng])
+              .addTo(map)
+              .bindPopup(`<strong>${name}</strong>`)
+              .openPopup();
+
+            // pan + zoom
+            map.setView([lat, lng], 15, { animate: true });
+          });
+        });
+    }
+    
+    function toggleDropdown(box, id) {
+      document.getElementById(id).classList.toggle('hidden', !box.checked);
     }
 
-    function addToPreferences(selectElement) {
-      const value = selectElement.value.trim();
-      if (!value) return;
-
-      const category = selectElement.getAttribute("data-category");
-      const entry = `${category}: ${value}`;
-
-      const prefsInput = document.getElementById('preferences-input');
-      let current = prefsInput.value.split(',').map(v => v.trim()).filter(v => v);
-
-      // Remove old entry from same category, if it exists
-      current = current.filter(item => !item.startsWith(`${category}:`));
-
-      // Add new entry
-      current.push(entry);
-      prefsInput.value = current.join(', ');
+    function addToPreferences(sel) {
+      const v = sel.value.trim();
+      if (!v) return;
+      const cat = sel.dataset.category;
+      let arr = document
+        .getElementById('preferences-input')
+        .value.split(',')
+        .map(x => x.trim())
+        .filter(x => x && !x.startsWith(cat + ':'));
+      arr.push(`${cat}: ${v}`);
+      document.getElementById('preferences-input').value = arr.join(', ');
     }
 
-
-    function removeFromPreferences(dropdownId) {
-      const dropdown = document.getElementById(dropdownId);
-      const select = dropdown.querySelector('select');
-      const value = select.value.trim();
-      const category = select.getAttribute("data-category");
-
-      if (!value || !category) return;
-
-      const prefsInput = document.getElementById('preferences-input');
-      let current = prefsInput.value.split(',').map(v => v.trim()).filter(v => v);
-
-      // Remove only the matching "Category: Value" entry
-      current = current.filter(item => item !== `${category}: ${value}`);
-
-      prefsInput.value = current.join(', ');
-
-      // Reset the dropdown
-      select.value = "";
+    function removeFromPreferences(id) {
+      const sel = document.querySelector(`#${id} select`);
+      const v = sel.value.trim(), cat = sel.dataset.category;
+      if (!v) return;
+      let arr = document
+        .getElementById('preferences-input')
+        .value.split(',')
+        .map(x => x.trim())
+        .filter(x => x && x !== `${cat}: ${v}`);
+      document.getElementById('preferences-input').value = arr.join(', ');
+      sel.value = '';
     }
 
     document.getElementById('ask-gpt-btn').addEventListener('click', async () => {
-    const city = document.querySelector('input[value="Cambridge"]').value;
-    const zip = document.querySelector('input[value="02142"]').value;
-    const preferences = document.getElementById('preferences-input').value;
+      const city        = document.querySelector('input[value="Cambridge"]').value;
+      const zip         = document.querySelector('input[value="02142"]').value;
+      const preferences       = document.getElementById('preferences-input').value;
+      console.log('🔍 Clicked:', city, zip, preferences);
 
-    const prompt = `Find helpful places for someone settling into ${city}, ZIP code ${zip}. They are interested in: ${preferences}. Give helpful and clear suggestions.`;
-
-    //const apiBase = window.location.origin;
-    //const apiBase='https://obscure-halibut-75r4v5vjp9pfw5q6-5500.app.github.dev/public/'
-    const apiBase = 'https://obscure-halibut-75r4v5vjp9pfw5q6-3000.app.github.dev';
-
-    try {
-      /* const response = await fetch('http://localhost:3000/ask-gpt', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })
-      }); */
-
-      
-
-      const response = await fetch(`${apiBase}/ask-gpt`, {
+      //const prompt = `Find helpful places for someone settling into ${city} (${zip}). They are interested in: ${prefs}.`;
+      const prompt = `Find helpful places for someone settling into ${city}, ZIP code ${zip}. They are interested in: ${preferences}. Give helpful and clear suggestions with 3 results for each preference type. Return the results ONLY as an HTML table(no explanatory text) (including <table>, <tr>, <td>, etc.), with columns Name, Address, ZIP code, Latitude, Longitude.`;
+      const res = await fetch('/ask-gpt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt })
       });
+      /* const { reply } = await res.json();
+      const p = document.createElement('p');
+      p.className = 'chat-bubble';
+      p.textContent = reply;
+      document.querySelector('.chatbox').appendChild(p); */
 
-      console.log('Raw response:', response);
+      const data = await res.json();
+      // Render ChatGPT's reply into the results table/container:
+      document.getElementById('results').innerHTML = data.reply;
+      attachRowClickHandlers();
+    });
 
-      const data = await response.json();
+    //Starter pack button grab
+    document.getElementById('starterbtn').addEventListener('click', async () => {
+      const city        = document.querySelector('input[value="Cambridge"]').value;
+      const zip         = document.querySelector('input[value="02142"]').value;
+      const preferences       = document.getElementById('preferences-input').value;
+      console.log('🔍 Clicked:', city, zip, preferences);
 
-      // Display the response in the chatbox
-      const chatbox = document.querySelector('.chatbox');
-      const replyBubble = document.createElement('p');
-      replyBubble.className = 'chat-bubble';
-      replyBubble.textContent = data.reply;
+    
+      const prompt = `You are an expert relocation consultant and content designer.  
+        Create a “Move to ${city} ${zip} Starter Pack” tailored to someone whose interests are ${preferences}. Organize your response so it can be turned directly into a PDF. Use clear top-level headings and subheadings, bullet lists, and tables wherever helpful.
 
-      chatbox.appendChild(replyBubble);
-    } catch (error) {
-      console.error('Error talking to GPT:', error);
-    }
-  });
+        1. **Introduction**  
+          A 1–2 sentence overview of what makes ${city} special.
+
+        2. **Essentials**  
+          - Best neighborhoods to live in (with a 1-sentence pros/cons each)  
+          - Average cost of living (rent, utilities) in a small table  
+          - How to get your driver’s license / register to vote / set up a bank account
+
+        3. **Housing**  
+          - Rental vs. purchase checklist  
+          - Top 3 websites/apps to search for homes  
+          - Typical timelines and tips for signing a lease
+
+        4. **Transportation**  
+          - Public transit options (bus, subway, light rail) with average fares  
+          - Rideshare, biking, and parking tips  
+          - Major airports and intercity trains
+
+        5. **Utilities & Services**  
+          - How to set up electricity, water, internet providers  
+          - Estimated monthly costs  
+          - Trash & recycling schedules
+
+        6. **Healthcare & Safety**  
+          - Nearest hospitals and urgent care centers  
+          - Emergency numbers and local safety tips  
+          - Recommended health-insurance navigators
+
+        7. **[PREFERENCE 1]**  
+          *(e.g. Public Schools)*  
+          - Top 3 options with address, website, and commute time  
+          - Enrollment tips and application deadlines
+
+        8. **[PREFERENCE 2]**  
+        *(e.g. African Restaurants)*  
+        - Top 3 spots with address, cuisine style, price range, and rating  
+        - Reservation or delivery info
+
+        9. **Local Culture & Community**
+        - Annual festivals, farmers markets, or community events  
+        - Neighborhood associations or Facebook groups to join
+
+        10. **Quick Tips & Resources**  
+        - A small table of “Must-have apps” (transit app, neighborhood forum, local news)  
+        - A short “Don’ts” list to avoid common newcomer pitfalls
+
+        **Formatting instructions:**  
+        - Use \`#\` for H1, \`##\` for H2, \`###\` for H3.  
+        - Use bullet lists (\`-\`) for items.  
+        - Present any tabular data in Markdown table syntax.  
+        - Keep each section concise (4–6 bullets max).
+        
+        Generate the full Markdown below — nothing else. 
+
+        Ensure the result is returned as HTML with no MARKDOWN syntax(e.g. <table>…</table>) so it can be displayed in a new window.
+        `;
+
+      console.log("🔍 Prompt being sent to /ask-gpt:", prompt);
+
+      const responses = await fetch('/ask-gpt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt})
+      });
+
+      const starterdata = await responses.json();
+      console.log('raw /ask-gpt response:', starterdata);
+      const replyHtml = starterdata.reply ?? '';  // should be HTML (e.g. <table>…</table>)
+
+      const cssHref = `${window.location.origin}/styles.css`;
+
+      // 1) open a new blank window
+      const win = window.open('', '_blank', 'width=800,height=600');
+
+      // 2) write a basic HTML page into it
+      win.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <base href="${window.location.origin}/" />
+            <title>Starter Pack Preview</title>
+            <link rel="stylesheet" href="${cssHref}" />
+            <style>
+              /* Print button styling, hidden in print */
+              #print-btn {
+                position: fixed;
+                top: 1rem;
+                right: 1rem;
+                padding: 0.5rem 1rem;
+                background: #123c1c;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                z-index: 1000;
+              }
+              @media print {
+                #print-btn { display: none; }
+              }
+            </style>
+          </head>
+          <body>
+            <!-- Print Button -->
+            <button id="print-btn">🖨️ Print PDF</button>
+
+            <!-- Starter Pack Content -->
+            <div id="starter-pack-content">
+              ${replyHtml}
+            </div>
+
+            <script>
+              document.getElementById('print-btn').addEventListener('click', () => {
+                window.print();
+              });
+            </script>
+          </body>
+        </html>
+      `);
+
+      win.document.close(); // Ensure the document is properly closed
+      win.focus(); // Bring the new window into focus
+      });
+
+    // === Leaflet Map Init ===
+    const locations = [
+      { name: 'Place A', lat: 42.3736, lng: -71.1097 },
+      { name: 'Place B', lat: 42.3656, lng: -71.1036 },
+      { name: 'MIT Building 1', lat: 42.3580, lng: -71.0925 },
+    ];
+    const map = L.map('map').setView(
+      [locations[0].lat, locations[0].lng],
+      13
+    );
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19
+    }).addTo(map);
+
+    locations.forEach(loc =>
+      L.marker([loc.lat, loc.lng])
+        .addTo(map)
+        .bindPopup(`<strong>${loc.name}</strong>`)
+    );
   </script>
 </body>
 </html>

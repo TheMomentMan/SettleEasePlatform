@@ -1,0 +1,89 @@
+/* Wrap your table in a scrollable container */
+#results {
+    overflow-x: auto;
+    margin-top: 1rem;
+  }
+  
+  /* Base table styling */
+  #results table {
+    width: 100%;
+    border-collapse: collapse;      /* no double-borders */
+    margin: 0 auto;                 /* center if narrower than parent */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;               /* clip rounded corners */
+    background: #fff;
+  }
+  
+  /* Header row */
+  #results thead th {
+    position: sticky; /* keeps header visible on scroll */
+    top: 0;
+    background-color: #123c1c;
+    color: #fff;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  
+  /* Data cells */
+  #results td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid #eee;
+    color: #333;
+    font-size: 0.95rem;
+  }
+  
+  /* Zebra striping */
+  #results tbody tr:nth-child(even) {
+    background: #f9f9f9;
+  }
+  
+  /* Hover highlight */
+  #results tbody tr:hover {
+    background: #e0f7fa;
+    cursor: pointer;
+  }
+  
+  /* Optional: tighten up the separator line under header */
+  #results thead th + th {
+    border-left: 1px solid rgba(255,255,255,0.2);
+  }
+  
+  /* Small devices: reduce padding */
+  @media (max-width: 600px) {
+    #results td, #results th {
+      padding: 0.5rem 0.75rem;
+    }
+  }
+
+  /*center the text in the header*/
+  #results table thead th {
+    text-align: center;
+  }
+  /* Headings */
+  h1, h2, h3 {
+    color: #2e92c0;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  /* Lists */
+  ul, ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Tables (in addition to your #results table rules) */
+  body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+  }
+  body th, body td {
+    border: 1px solid #ddd;
+    padding: 0.5rem 1rem;
+  }
+    
