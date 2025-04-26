@@ -86,4 +86,29 @@
     border: 1px solid #ddd;
     padding: 0.5rem 1rem;
   }
+  /* maps.css or styles.css */
+  #map {
+    width: 960px;        /* fill its parent’s width */
+    height: 320px;      /* fixed height */
+    min-height: 200px;  /* optional lower bound */
+    max-height: 480px;  /* optional upper bound */
+  }
+  .results-wrapper {
+    max-height: 300px;    /* whatever works for your layout */
+    overflow-y: auto;     /* vertical scrollbar when needed */
+    margin-top: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: white;
+  }
+  #results table {
+    width: 100%;          /* full width of wrapper */
+    border-collapse: collapse;
+  }
+  #results th, #results td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+
     

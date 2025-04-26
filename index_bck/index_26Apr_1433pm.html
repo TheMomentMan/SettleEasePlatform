@@ -76,7 +76,6 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      /* height: 480px; */
     }
     .results .card {
       background-color: white;
@@ -171,26 +170,7 @@
           </div>
 
           <label><input type="checkbox" /> Worship</label>
-          <!-- <label><input type="checkbox" /> Stores</label> -->
-          
-          <label>
-            <input
-              type="checkbox"
-              id="stores-checkbox"
-              onchange="toggleDropdown(this,'store-options'); removeFromPreferences('store-options')"
-            />
-            Stores
-          </label>
-          <div id="store-options" class="subcategory hidden">
-            <select data-category="stores" onchange="addToPreferences(this)">
-              <option value="">Select store type</option>
-              <option value="Grocery">Grocery</option>
-              <option value="Clothing">Clothing</option>
-              <option value="Jewelry">Jewelry</option>
-              <option value="Electronics">Electronics</option>
-            </select>
-          </div>
-
+          <label><input type="checkbox" /> Stores</label>
 
           <label>
             <input
@@ -210,8 +190,8 @@
             </select>
           </div>
 
-          <label><input type="checkbox" unchecked /> Salons</label>
-          <label><input type="checkbox" unchecked /> Sports</label>
+          <label><input type="checkbox" checked /> Salons</label>
+          <label><input type="checkbox" checked /> Sports</label>
 
           <button id="ask-gpt-btn" class="find-btn">Recommend</button>
         </div>
@@ -244,7 +224,7 @@
       <aside class="chatbox">
         <p class="chat-bubble">Where can I find a school?</p>
         <input type="text" placeholder="Enter a message" />
-        <button id="starterbtn" class="send-btn">Get starter pack➤</button>
+        <button id="starterbtn" class="send-btn">➤</button>
       </aside>
     </div>
   </div>
@@ -280,7 +260,6 @@
 
             // pan + zoom
             map.setView([lat, lng], 15, { animate: true });
-            map.invalidateSize();
           });
         });
     }
@@ -419,7 +398,7 @@
       console.log('🔍 Clicked:', city, zip, preferences);
 
       //const prompt = `Find helpful places for someone settling into ${city} (${zip}). They are interested in: ${prefs}.`;
-      const prompt = `Find helpful places for someone settling into ${city}, ZIP code ${zip}. They are interested in: ${preferences}. Give helpful and clear suggestions with 5 results for each preference type. Return the results ONLY as an HTML table(with no Markdown code fences and NO explanatory text at all) (including <table>, <tr>, <td>, etc.), with columns Name, Address, ZIP code, Latitude, Longitude, Category(School, store, Worship etc -selected preferences), .`;
+      const prompt = `Find helpful places for someone settling into ${city}, ZIP code ${zip}. They are interested in: ${preferences}. Give helpful and clear suggestions with 5 results for each preference type. Return the results ONLY as an HTML table(with no Markdown code fences or explanatory text) (including <table>, <tr>, <td>, etc.), with columns Name, Address, ZIP code, Latitude, Longitude.`;
       const res = await fetch('/ask-gpt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -433,36 +412,13 @@
 
       const data = await res.json();
       // Render ChatGPT's reply into the results table/container:
-      const container = document.getElementById('results');
-      container.innerHTML = data.reply;
-      //document.getElementById('results').innerHTML = data.reply;
-
-      // 2. Grab the table and split out the header
-      const tbl = container.querySelector('table');
-      const allRows = Array.from(tbl.querySelectorAll('tr'));
-      const headerRow = allRows.shift();      // remove the very first <tr>
-      const thead     = document.createElement('thead');
-      const tbody     = document.createElement('tbody');
-
-      thead.appendChild(headerRow);
-      allRows.forEach(r => tbody.appendChild(r));
-
-      tbl.innerHTML = '';      // clear out old content
-      tbl.appendChild(thead);
-      tbl.appendChild(tbody);
-
-
+      document.getElementById('results').innerHTML = data.reply;
       addDistanceColumn();
-      
-      // 4. Finally initialize DataTables
-      if ($.fn.dataTable.isDataTable(tbl)) {
-        $(tbl).DataTable().destroy();
-      }
-      $(tbl).DataTable({
-        paging:   false,
-        info:     false,
-        ordering: true,
-        searching:true
+      $('#results table').DataTable({
+        paging:   false,    // turn off pagination if you like
+        info:     false,    // hide “Showing x of y entries”
+        ordering: true,     // clickable column headers
+        searching:true      // built-in search box
       });
 
       attachRowClickHandlers();

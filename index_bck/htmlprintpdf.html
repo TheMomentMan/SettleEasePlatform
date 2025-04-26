@@ -178,8 +178,8 @@
             </select>
           </div>
 
-          <label><input type="checkbox" checked /> Salons</label>
-          <label><input type="checkbox" checked /> Sports</label>
+          <label><input type="checkbox" /> Salons</label>
+          <label><input type="checkbox" /> Sports</label>
 
           <button id="ask-gpt-btn" class="find-btn">Recommend</button>
         </div>
@@ -209,7 +209,7 @@
       <aside class="chatbox">
         <p class="chat-bubble">Where can I find a school?</p>
         <input type="text" placeholder="Enter a message" />
-        <button id="starterbtn" class="send-btn">➤</button>
+        <button id="starterbtn" class="send-btn">Get starter pack➤</button>
       </aside>
     </div>
   </div>
@@ -345,12 +345,12 @@
 
         7. **[PREFERENCE 1]**  
           *(e.g. Public Schools)*  
-          - Top 3 options with address, website, and commute time  
+          - Top 5 options with address, website, and commute time  
           - Enrollment tips and application deadlines
 
         8. **[PREFERENCE 2]**  
         *(e.g. African Restaurants)*  
-        - Top 3 spots with address, cuisine style, price range, and rating  
+        - Top 5 spots with address, cuisine style, price range, and rating  
         - Reservation or delivery info
 
         9. **Local Culture & Community**
@@ -359,13 +359,13 @@
 
         10. **Quick Tips & Resources**  
         - A small table of “Must-have apps” (transit app, neighborhood forum, local news)  
-        - A short “Don’ts” list to avoid common newcomer pitfalls
+        - A short “Do nots” list to avoid common newcomer pitfalls
 
         **Formatting instructions:**  
-        - Use \`#\` for H1, \`##\` for H2, \`###\` for H3.  
-        - Use bullet lists (\`-\`) for items.  
+        - Use # for H1, ## for H2, ### for H3.  
+        - Use bullet lists (`-`) for items.  
         - Present any tabular data in Markdown table syntax.  
-        - Keep each section concise (4–6 bullets max).
+        - Keep each section concise (4 to 6 bullets max).
         
         Generate the full Markdown below — nothing else. 
 
@@ -431,8 +431,8 @@
               });
             </script>
           </body>
-        </html>
-      `);
+        </html>`
+      );
 
       win.document.close(); // Ensure the document is properly closed
       win.focus(); // Bring the new window into focus
