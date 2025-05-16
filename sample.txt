@@ -1,0 +1,10 @@
+grid.add(new Label("Start Hour:"), 0, 3);
+grid.add(startHourField, 1, 3);
+
+grid.add(new Label("End Hour:"), 0, 4);
+grid.add(endHourField, 1, 4);
+
+//start time
+TextField startHourField = new TextField(String.valueOf(demand.getStartHour()));
+//end time
+TextField endHourField = new TextField(String.valueOf(demand.getEndHour()));

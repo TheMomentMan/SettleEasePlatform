@@ -88,10 +88,10 @@
   }
   /* maps.css or styles.css */
   #map {
-    width: 960px;        /* fill its parent’s width */
-    height: 320px;      /* fixed height */
-    min-height: 200px;  /* optional lower bound */
-    max-height: 480px;  /* optional upper bound */
+    width: 100%;        /* fill its parent's width */
+    height: 100%;      /* fill its parent's height */
+    min-height: 320px;  /* optional lower bound */
+    max-height: 600px;  /* optional upper bound */
   }
   .results-wrapper {
     max-height: 300px;    /* whatever works for your layout */
@@ -108,6 +108,32 @@
   #results th, #results td {
     padding: 0.5rem;
     border-bottom: 1px solid #eee;
+  }
+  
+  /* Add hover/focus states for all links and buttons */
+  a:hover, a:focus {
+    background: #176b34;
+    color: #fff;
+    outline: none;
+  }
+
+  button:hover, button:focus {
+    filter: brightness(1.08);
+    outline: 2px solid #176b34;
+    outline-offset: 2px;
+  }
+
+  .btn:hover, .btn:focus {
+    background: #176b34 !important;
+    color: #fff !important;
+    outline: 2px solid #176b34;
+    outline-offset: 2px;
+  }
+
+  .fav-btn:hover, .fav-btn:focus {
+    color: #FFD700;
+    outline: 2px solid #FFD700;
+    outline-offset: 2px;
   }
   
 

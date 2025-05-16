@@ -134,3 +134,33 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# PHP specific
+/vendor/
+composer.lock
+.phpunit.result.cache
+.php_cs.cache
+.php-cs-fixer.cache
+.phpunit.cache
+.phpunit.cache.*
+.php_cs.cache
+.php-cs-fixer.cache
+.phpunit.cache
+.phpunit.cache.*
+
+# IDE specific
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

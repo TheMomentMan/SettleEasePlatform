@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Sign Up – Settleease</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #123c1c;
+      --secondary-color: #f6f0e1;
+      --accent-color: #d7d2ab;
+      --error-color: #dc3545;
+      --text-color: #333;
+      --border-color: #ddd;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--secondary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .signup-container { width: 100%; max-width: 400px; }
+    .signup-card {
+      background: #fff;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .logo { text-align: center; margin-bottom: 2rem; }
+    .logo h1 { color: var(--primary-color); font-size: 2rem; font-weight: 600; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-color); font-weight: 500; }
+    .form-control {
+      width: 100%; padding: 0.75rem 1rem; border: 2px solid var(--border-color);
+      border-radius: 8px; font-size: 1rem; transition: border-color 0.3s ease;
+    }
+    .form-control:focus { outline: none; border-color: var(--primary-color); }
+    .btn {
+      width: 100%; padding: 0.75rem 1rem; border: none; border-radius: 8px;
+      font-size: 1rem; font-weight: 500; cursor: pointer; transition: background-color 0.3s ease;
+    }
+    .btn-primary { background-color: var(--primary-color); color: white; }
+    .btn-primary:hover { background-color: #0a2a12; }
+    .login-link { text-align: center; margin-top: 1.5rem; color: var(--text-color); }
+    .login-link a { color: var(--primary-color); text-decoration: none; font-weight: 500; }
+    .login-link a:hover { text-decoration: underline; }
+    .error-message { color: var(--error-color); margin-top: 1rem; text-align: center; font-size: 0.9rem; }
+    .success-message { color: #198754; margin-top: 1rem; text-align: center; font-size: 0.9rem; }
+    @media (max-width: 480px) { .signup-card { padding: 2rem 1.5rem; } }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <div class="signup-card">
+      <div class="logo">
+        <h1>Settleease</h1>
+      </div>
+      <form id="signup-form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" class="form-control" placeholder="Choose a username" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" class="form-control" placeholder="Create a password" required />
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" name="confirm-password" class="form-control" placeholder="Re-enter your password" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+        <p class="error-message" id="error-message"></p>
+        <p class="success-message" id="success-message"></p>
+      </form>
+      <div class="login-link">
+        Already have an account? <a href="login.html">Log In</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const errorMsg = document.getElementById('error-message');
+      const successMsg = document.getElementById('success-message');
+      errorMsg.textContent = '';
+      successMsg.textContent = '';
+      // Validation
+      if (!username.trim() || !password.trim() || !confirmPassword.trim()) {
+        errorMsg.textContent = 'Please fill in all fields (no whitespace only).';
+        return;
+      }
+      if (!/^\w{3,}$/.test(username)) {
+        errorMsg.textContent = 'Username must be at least 3 characters and contain only letters, numbers, or underscores.';
+        return;
+      }
+      if (password.length < 5) {
+        errorMsg.textContent = 'Password must be at least 5 characters.';
+        return;
+      }
+      if (password !== confirmPassword) {
+        errorMsg.textContent = 'Passwords do not match.';
+        return;
+      }
+      try {
+        const res = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          successMsg.textContent = 'Account created! Please log in.';
+          setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+        } else {
+          errorMsg.textContent = data.message || 'Signup failed.';
+        }
+      } catch (err) {
+        errorMsg.textContent = 'Signup failed. Please try again.';
+      }
+    });
+  </script>
+</body>
+</html> 

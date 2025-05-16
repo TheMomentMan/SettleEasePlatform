@@ -4,8 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Settleease</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
 
-  <!-- Leaflet CSS (with SRI + anonymous CORS) -->
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -13,154 +20,753 @@
   />
 
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f6f0e1;
+    :root {
+      --primary-color: #123c1c;
+      --primary-light: #1a5a2a;
+      --secondary-color: #f6f0e1;
+      --accent-color: #d7d2ab;
+      --text-color: #2d3748;
+      --text-light: #718096;
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --spacing-xs: 0.5rem;
+      --spacing-sm: 1rem;
+      --spacing-md: 1.5rem;
+      --spacing-lg: 2rem;
     }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--secondary-color);
+      color: var(--text-color);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
     .container {
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      min-height: 100vh;
     }
+
+    /* Header Styles */
     header {
-      background-color: #123c1c;
+      background-color: var(--primary-color);
       color: white;
-      padding: 1rem;
+      padding: var(--spacing-sm) var(--spacing-lg);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: 40px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      transition: transform var(--transition);
+    }
+
+    .logo:hover {
+      transform: translateY(-2px);
+    }
+
+    .logo h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .search-bar {
+      flex: 1;
+      max-width: 500px;
+      margin: 0 var(--spacing-lg);
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 1rem;
+      transition: var(--transition);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .search-bar input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+    }
+
+    .search-bar input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .user-profile img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      transition: var(--transition);
+    }
+
+    .user-profile img:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Main Content Styles */
     .main-content {
       display: flex;
       flex: 1;
-      margin-left: 20px;
+      gap: var(--spacing-lg);
+      padding: var(--spacing-lg);
+      align-items: flex-start;
+      min-height: 0;
     }
+
+    /* Sidebar Styles */
     .sidebar {
-      background-color: #d7d2ab;
-      padding: 1rem;
-      width: 200px;
+      background-color: white;
+      padding: var(--spacing-md);
+      width: 300px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: var(--spacing-md);
+      align-self: flex-start;
+      transition: var(--transition);
     }
-    input[type="text"] {
-      padding: 0.5rem;
-      border: none;
-      border-radius: 4px;
+
+    .sidebar:hover {
+      box-shadow: var(--shadow-lg);
     }
-    .checkboxes label {
-      display: block;
-      margin: 0.2rem 0;
+
+    .form-group {
+      margin-bottom: var(--spacing-sm);
     }
+
+    .form-group label {
+      margin-bottom: var(--spacing-xs);
+      font-size: 0.97rem;
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    .form-control {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.97rem;
+      border: 2px solid var(--border-color);
+      transition: var(--transition);
+      width: 100%;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(18, 60, 28, 0.1);
+    }
+
+    .checkboxes {
+      gap: 0.6rem;
+    }
+
+    .checkbox-item {
+      gap: 0.3rem;
+      padding: 0.3rem 0.2rem;
+      border-radius: 6px;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      border-radius: 3px;
+    }
+
+    .checkbox-item label {
+      font-size: 0.97rem;
+    }
+
+    .checkbox-item i {
+      font-size: 1rem;
+    }
+
     .subcategory {
-      margin-left: 20px;
-      margin-top: 5px;
-    }
-    .hidden {
       display: none;
-    }
-    .find-btn {
-      background-color: #123c1c;
-      color: white;
-      padding: 0.7rem;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+      margin-left: 1rem;
       margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
     }
+
+    .subcategory.visible {
+      display: block;
+    }
+
+    .subcategory select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: white;
+    }
+
+    .find-btn {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 1rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-xs);
+      width: 100%;
+    }
+
+    .find-btn:hover {
+      background-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .find-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Map Section Styles */
     .map-section {
       flex: 1;
-      padding: 1rem;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-      /* height: 480px; */
+      gap: var(--spacing-lg);
     }
-    .results .card {
-      background-color: white;
-      padding: 0.5rem;
-      border-bottom: 1px solid #ccc;
+
+    .map-container {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      height: 500px;
+      background: #e5e3df;
+      transition: var(--transition);
     }
+
+    .map-container:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .map-controls {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 1000;
+    }
+
+    .map-control-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: white;
+      border: none;
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .map-control-btn:hover {
+      background-color: var(--secondary-color);
+    }
+
+    /* Results Section Styles */
+    .results-wrapper {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .results {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .result-card {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .result-card:last-child {
+      border-bottom: none;
+    }
+
+    .result-card:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .result-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+    }
+
+    .result-card .category {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.5rem;
+      background-color: var(--secondary-color);
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .result-card .distance {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    /* Chatbox Styles */
     .chatbox {
-      background-color: #e9e1b8;
-      width: 250px;
-      padding: 1rem;
+      background-color: white;
+      width: 320px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      height: 800px;
+      min-height: 800px;
+      max-height: 800px;
+      align-self: flex-start;
+      transition: var(--transition);
+    }
+
+    .chatbox:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .chat-header {
+      padding: var(--spacing-sm);
+      background-color: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
       position: relative;
     }
-    .chat-bubble {
-      background-color: #123c1c;
+
+    .chat-popout-btn {
+      margin-left: auto;
+      background: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 2.2rem;
+      height: 2.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .chat-popout-btn i {
+      color: #123c1c;
+      font-size: 1.1rem;
+    }
+
+    .chat-popout-btn:hover {
+      background: #d7d2ab;
+    }
+
+    .chat-clear-btn {
+      margin-left: 0.5rem;
+      background: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 2.2rem;
+      height: 2.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .chat-clear-btn i {
+      color: #123c1c;
+      font-size: 1.1rem;
+    }
+
+    .chat-clear-btn:hover {
+      background: #d7d2ab;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: var(--spacing-sm);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+      background: var(--secondary-color);
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 0.85rem 1.2rem;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      transition: var(--transition);
+      animation: messageAppear 0.3s ease-out;
+    }
+
+    @keyframes messageAppear {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background-color: var(--primary-color);
       color: white;
-      padding: 0.5rem;
-      border-radius: 10px;
-      max-width: 90%;
     }
-    .chatbox input {
-      padding: 0.5rem;
-      border: 1px solid #aaa;
-      border-radius: 5px;
+
+    .message.bot {
+      align-self: flex-start;
+      background-color: white;
+      color: var(--text-color);
+      box-shadow: var(--shadow-sm);
     }
-    .send-btn {
-      background-color: #123c1c;
+
+    .chat-input {
+      padding: var(--spacing-sm);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: var(--spacing-xs);
+      background: white;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 0.85rem;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .chat-input input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(18, 60, 28, 0.1);
+    }
+
+    .chat-input button {
+      padding: 0.85rem 1.2rem;
+      background-color: var(--primary-color);
       color: white;
       border: none;
-      border-radius: 5px;
-      padding: 0.5rem;
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      align-self: flex-end;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .user-icon {
-      font-size: 1.5rem;
+
+    .chat-input button:hover {
+      background-color: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .chat-input button:active {
+      transform: translateY(0);
+    }
+
+    /* Results Table Styling */
+    .results table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: white;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: var(--transition);
+    }
+
+    .results table:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .results th, .results td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .results th {
+      background: var(--secondary-color);
+      color: var(--primary-color);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .results tr:last-child td {
+      border-bottom: none;
+    }
+
+    .results tbody tr {
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .results tbody tr:hover {
+      background: var(--secondary-color);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .main-content {
+        flex-direction: column;
+      }
+
+      .sidebar, .chatbox {
+        width: 100%;
+      }
+
+      .map-container {
+        height: 400px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm);
+      }
+
+      .search-bar {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+      }
+
+      .main-content {
+        padding: var(--spacing-sm);
+      }
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--secondary-color);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-light);
+    }
+
+    /* Results Table Styling */
+    .results table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      font-size: 1rem;
+    }
+    .results th, .results td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .results th {
+      background: var(--secondary-color);
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    .results tr:last-child td {
+      border-bottom: none;
+    }
+    .results tbody tr {
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .results tbody tr:hover {
+      background: var(--accent-color);
+    }
+    .dataTables_wrapper .dataTables_filter input {
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      padding: 0.3rem 0.7rem;
+      font-size: 1rem;
+      margin-left: 0.5rem;
+    }
+    .dataTables_wrapper .dataTables_filter label {
+      font-size: 1rem;
+      color: var(--text-color);
+    }
+    
+    /* Add Favorite Button Styles */
+    .fav-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #ccc;
+      font-size: 1.2rem;
+      transition: transform 0.2s;
+      padding: 0.3rem;
+    }
+    
+    .fav-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    .fav-btn.active {
+      color: #FFD700;
     }
   </style>
-  <link 
-    rel="stylesheet" 
-    href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"
-  />
-  <link rel="stylesheet" href="styles.css" />
-  
 </head>
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- DataTables JS -->
-<script 
-  src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js">
-</script>
 
 <body>
   <div class="container">
     <header>
+      <div class="logo">
+        <i class="fas fa-map-marked-alt"></i>
       <h1>Settleease</h1>
-      <div class="user-icon">👤</div>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search location..." />
+      </div>
+      <!-- Favourites Button -->
+      <button id="favourites-btn" class="btn" style="background:none;border:none;cursor:pointer;margin-right:1rem;font-size:1.5rem;display:flex;align-items:center;gap:0.5rem;color:#FFD700;" title="View Favourites">
+        <i class="fas fa-heart"></i> <span style="font-size:1rem;color:white;">Favourites</span>
+      </button>
+      <div class="user-profile">
+        <img id="user-avatar" src="https://ui-avatars.com/api/?name=John+Doe&background=123c1c&color=fff" alt="User Profile" />
+        <span id="user-name">John Doe</span>
+        <button id="logout-btn" style="margin-left:1rem;background:#fff;color:#123c1c;border:none;border-radius:6px;padding:0.4rem 1rem;cursor:pointer;font-weight:500;">Logout</button>
+      </div>
     </header>
 
+    <!-- Favourites Modal -->
+    <div id="favourites-modal" style="display:none;position:fixed;z-index:10000;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);align-items:center;justify-content:center;">
+      <div style="background:white;padding:2rem 2.5rem;border-radius:16px;max-width:600px;width:100%;overflow:auto;position:relative;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+        <button id="close-favourites-modal" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#123c1c;" title="Close">&times;</button>
+        <h2 style="margin-bottom:1.5rem;color:#123c1c;">My Favourites</h2>
+        <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
+          <thead>
+            <tr style="background:#f6f0e1;color:#123c1c;">
+              <th style="padding:0.5rem 1rem;text-align:left;width:45%;word-break:break-word;">Name</th>
+              <th style="padding:0.5rem 1rem;text-align:left;width:30%;word-break:break-word;">Category</th>
+              <th style="padding:0.5rem 1rem;text-align:left;width:25%;word-break:break-word;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="favourites-list">
+            <!-- Favourites will be dynamically inserted here -->
+            <tr><td colspan="3" style="text-align:center;color:#888;">No favourites yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <div class="main-content">
-      <!-- SIDEBAR -->
       <aside class="sidebar">
-        <label>City</label>
-        <input type="text" value="Cambridge" />
-
-        <label>Zip Code</label>
-        <input type="text" value="02142" />
-
-        <label>Preferences</label>
-        <input type="text" id="preferences-input" readonly />
-
+        <div style="margin-bottom: 1rem;">
+          <label for="city-input" style="display:block;">City</label>
+          <input id="city-input" type="text" class="form-control" />
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label for="zip-input" style="display:block;">Zip Code</label>
+          <input id="zip-input" type="text" class="form-control" />
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label for="preferences-input" style="display:block;">Preferences</label>
+          <input type="text" id="preferences-input" class="form-control" readonly />
+        </div>
+        <div class="form-group">
         <label>Categories</label>
         <div class="checkboxes">
-          <label>
-            <input
-              type="checkbox"
-              id="schools-checkbox"
-              onchange="toggleDropdown(this,'school-options'); removeFromPreferences('school-options')"
-            />
-            Schools
-          </label>
-          <div id="school-options" class="subcategory hidden">
+            <div class="checkbox-item">
+              <input type="checkbox" id="select-all" onchange="toggleAllCheckboxes(this)" />
+              <label for="select-all">Select All</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="schools-checkbox" onchange="handleCheckboxChange(this, 'schools-options')" />
+              <label for="schools-checkbox"><i class="fas fa-school"></i> Schools</label>
+            </div>
+            <div id="schools-options" class="subcategory" style="display:none">
             <select data-category="school" onchange="addToPreferences(this)">
               <option value="">Select school type</option>
               <option value="public">Public</option>
@@ -169,19 +775,24 @@
               <option value="church">Church-Owned</option>
             </select>
           </div>
-
-          <label><input type="checkbox" /> Worship</label>
-          <!-- <label><input type="checkbox" /> Stores</label> -->
-          
-          <label>
-            <input
-              type="checkbox"
-              id="stores-checkbox"
-              onchange="toggleDropdown(this,'store-options'); removeFromPreferences('store-options')"
-            />
-            Stores
-          </label>
-          <div id="store-options" class="subcategory hidden">
+            <div class="checkbox-item">
+              <input type="checkbox" id="worship-checkbox" onchange="handleCheckboxChange(this, 'worship-options')" />
+              <label for="worship-checkbox"><i class="fas fa-place-of-worship"></i> Worship</label>
+            </div>
+            <div id="worship-options" class="subcategory" style="display:none">
+              <select data-category="worship" onchange="addToPreferences(this)">
+                <option value="">Select worship type</option>
+                <option value="church">Church</option>
+                <option value="mosque">Mosque</option>
+                <option value="synagogue">Synagogue</option>
+                <option value="temple">Temple</option>
+              </select>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="stores-checkbox" onchange="handleCheckboxChange(this, 'stores-options')" />
+              <label for="stores-checkbox"><i class="fas fa-store"></i> Stores</label>
+            </div>
+            <div id="stores-options" class="subcategory" style="display:none">
             <select data-category="stores" onchange="addToPreferences(this)">
               <option value="">Select store type</option>
               <option value="Grocery">Grocery</option>
@@ -190,17 +801,11 @@
               <option value="Electronics">Electronics</option>
             </select>
           </div>
-
-
-          <label>
-            <input
-              type="checkbox"
-              id="restaurants-checkbox"
-              onchange="toggleDropdown(this,'restaurant-options'); removeFromPreferences('restaurant-options')"
-            />
-            Restaurants
-          </label>
-          <div id="restaurant-options" class="subcategory hidden">
+            <div class="checkbox-item">
+              <input type="checkbox" id="restaurants-checkbox" onchange="handleCheckboxChange(this, 'restaurants-options')" />
+              <label for="restaurants-checkbox"><i class="fas fa-utensils"></i> Restaurants</label>
+            </div>
+            <div id="restaurants-options" class="subcategory" style="display:none">
             <select data-category="restaurant" onchange="addToPreferences(this)">
               <option value="">Select restaurant type</option>
               <option value="fast-food">Fast Food</option>
@@ -209,84 +814,267 @@
               <option value="buffet">Buffet</option>
             </select>
           </div>
-
-          <label><input type="checkbox" unchecked /> Salons</label>
-          <label><input type="checkbox" unchecked /> Sports</label>
-
-          <button id="ask-gpt-btn" class="find-btn">Recommend</button>
+            <div class="checkbox-item">
+              <input type="checkbox" id="salons-checkbox" onchange="handleCheckboxChange(this, 'salons-options')" />
+              <label for="salons-checkbox"><i class="fas fa-cut"></i> Salons</label>
         </div>
+            <div id="salons-options" class="subcategory" style="display:none">
+              <select data-category="salon" onchange="addToPreferences(this)">
+                <option value="">Select salon type</option>
+                <option value="hair">Hair</option>
+                <option value="nails">Nails</option>
+                <option value="spa">Spa</option>
+                <option value="barber">Barber</option>
+              </select>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="sports-checkbox" onchange="handleCheckboxChange(this, 'sports-options')" />
+              <label for="sports-checkbox"><i class="fas fa-running"></i> Sports</label>
+            </div>
+            <div id="sports-options" class="subcategory" style="display:none">
+              <select data-category="sports" onchange="addToPreferences(this)">
+                <option value="">Select sports type</option>
+                <option value="gym">Gym</option>
+                <option value="pool">Swimming Pool</option>
+                <option value="tennis">Tennis Court</option>
+                <option value="basketball">Basketball Court</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button id="ask-gpt-btn" class="find-btn">
+          <i class="fas fa-search"></i>
+          Find Recommendations
+        </button>
+        <button id="starterbtn" class="find-btn" style="margin-top: 1rem;">
+          <i class="fas fa-box"></i>
+          Get Starter Pack
+        </button>
       </aside>
 
-      <!-- MAP & RESULTS -->
       <section class="map-section">
-        <div id="map" style="flex:1; border:1px solid #ccc;"></div>
-        <!--<div id="results" class="results"></div> -->
+        <div class="map-container">
+          <div id="map"></div>
+          <div class="map-controls">
+            <button class="map-control-btn" title="Zoom In">
+              <i class="fas fa-plus"></i>
+            </button>
+            <button class="map-control-btn" title="Zoom Out">
+              <i class="fas fa-minus"></i>
+            </button>
+            <button class="map-control-btn" title="Current Location">
+              <i class="fas fa-location-arrow"></i>
+            </button>
+          </div>
+        </div>
+
         <div class="results-wrapper">
           <div id="results" class="results"></div>
         </div>
-        <!-- <div class="results">
-          <div class="card">
-            <strong>Garfield School</strong><br />
-            School ⭐⭐⭐⭐ – 1.5 mi
-          </div>
-          <div class="card">
-            <strong>Temple Beth-El</strong><br />
-            Worship ⭐⭐⭐⭐ – 1.5 mi
-          </div>
-          <div class="card">
-            <strong>Green Earth Market</strong><br />
-            Grocery ⭐⭐⭐½ – 1 mi
-          </div>
-        </div> -->
       </section>
 
-      <!-- CHATBOX -->
       <aside class="chatbox">
-        <p class="chat-bubble">Where can I find a school?</p>
-        <input type="text" placeholder="Enter a message" />
-        <button id="starterbtn" class="send-btn">Get starter pack➤</button>
+        <div class="chat-header">
+          <i class="fas fa-robot"></i>
+          <span>SettleEase Assistant</span>
+          <button class="chat-popout-btn" title="Pop out chat">
+            <i class="fas fa-external-link-alt"></i>
+          </button>
+          <button class="chat-clear-btn" title="Clear chat" disabled style="margin-left:0.5rem;background:#fff;border:none;cursor:pointer;border-radius:50%;width:2.2rem;height:2.2rem;display:flex;align-items:center;justify-content:center;transition:background 0.2s;">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <div class="chat-messages">
+          <div class="message bot">
+            Where can I find a school?
+          </div>
+        </div>
+        <div class="chat-input">
+          <input type="text" placeholder="Type your message..." />
+          <button disabled>
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
       </aside>
     </div>
   </div>
 
-  <!-- Leaflet JS (still in head or here—OK as long as map init is after) -->
+  <!-- Leaflet JS -->
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     crossorigin="anonymous"
   ></script>
 
-  <!-- YOUR APP LOGIC -->
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
   <script>
+    // Clear chat history only on true reload. Comment out to preserve history after reload.
+    // This will NOT clear history when opening a popup.
+    if (performance && performance.getEntriesByType) {
+      const nav = performance.getEntriesByType('navigation')[0];
+      if (nav && nav.type === 'reload') {
+        localStorage.removeItem('settleease_chat_history');
+      }
+    } else if (performance && performance.navigation) {
+      // Fallback for older browsers
+      if (performance.navigation.type === 1) { // 1 = Reload
+        localStorage.removeItem('settleease_chat_history');
+      }
+    }
+
     let currentMarker = null;
+    // Make map and userLat/userLng globally accessible
+    window.map = null;
+    window.userLat = null;
+    window.userLng = null;
+
     function attachRowClickHandlers() {
       document
         .querySelectorAll('#results table tbody tr')
         .forEach(row => {
           row.style.cursor = 'pointer';
-          row.addEventListener('click', () => {
+          
+          // Get cells data
             const cells = row.cells;
-            const lat   = parseFloat(cells[3].textContent);
-            const lng   = parseFloat(cells[4].textContent);
-            const name  = cells[0].textContent;
+          const locationData = {
+            name: cells[0].textContent.trim().replace(/^\s*⭐?\s*/, ''), // Remove star if present
+            address: cells[1].textContent.trim(),
+            zip_code: cells[2].textContent.trim(),
+            latitude: parseFloat(cells[3].textContent) || null,
+            longitude: parseFloat(cells[4].textContent) || null,
+            category: cells[5].textContent.trim() || null
+          };
+          
+          // Create favorite button
+          const favBtn = document.createElement('button');
+          favBtn.className = 'fav-btn';
+          favBtn.innerHTML = '<i class="fas fa-star"></i>';
+          
+          // Check if this location is already favorited
+          checkFavoriteStatus(locationData.name).then(isFavorite => {
+            if (isFavorite) {
+              favBtn.classList.add('active');
+            }
+          });
+          
+          // Add favorite button click handler
+          favBtn.addEventListener('click', async (e) => {
+            e.stopPropagation(); // Prevent row click handler from firing
+            
+            try {
+              if (!favBtn.classList.contains('active')) {
+                // Add to favorites
+                console.log('Sending location data:', locationData);
+                const response = await fetch('/api/favorites', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(locationData)
+                });
+
+                const result = await response.json();
+                console.log('Server response:', result);
+
+                if (result.success) {
+                  favBtn.classList.add('active');
+                } else {
+                  throw new Error(result.details || result.message);
+                }
+              } else {
+                // Remove from favorites
+                const response = await fetch('/api/favorites');
+                const { favorites } = await response.json();
+                const favorite = favorites.find(f => f.name === locationData.name);
+                
+                if (favorite) {
+                  const deleteResponse = await fetch(`/api/favorites/${favorite.id}`, {
+                    method: 'DELETE'
+                  });
+                  const result = await deleteResponse.json();
+                  console.log('Server response (delete):', result);
+
+                  if (result.success) {
+                    favBtn.classList.remove('active');
+                  } else {
+                    throw new Error(result.details || result.message);
+                  }
+                }
+              }
+            } catch (error) {
+              console.error('Error updating favorites:', error);
+              alert(error.message || 'Failed to update favorites. Please try again.');
+            }
+          });
+          
+          // Add the button to the name cell
+          cells[0].insertBefore(favBtn, cells[0].firstChild);
+          
+          // Row click handler for map marker
+          row.addEventListener('click', () => {
+            const lat = locationData.latitude;
+            const lng = locationData.longitude;
+            const name = locationData.name;
 
             // remove old marker
-            if (currentMarker) map.removeLayer(currentMarker);
+            if (currentMarker && window.map) {
+              window.map.removeLayer(currentMarker);
+            }
 
             // add new marker + popup
+            if (window.map) {
             currentMarker = L.marker([lat, lng])
-              .addTo(map)
+                .addTo(window.map)
               .bindPopup(`<strong>${name}</strong>`)
               .openPopup();
 
             // pan + zoom
-            map.setView([lat, lng], 15, { animate: true });
-            map.invalidateSize();
+              window.map.setView([lat, lng], 15, { animate: true });
+              window.map.invalidateSize();
+            }
           });
         });
     }
     
-    function toggleDropdown(box, id) {
-      document.getElementById(id).classList.toggle('hidden', !box.checked);
+    // Helper function to check if a location is favorited
+    async function checkFavoriteStatus(locationName) {
+      try {
+        const response = await fetch('/api/favorites');
+        const { favorites } = await response.json();
+        return favorites.some(f => f.name === locationName);
+      } catch (error) {
+        console.error('Error checking favorite status:', error);
+        return false;
+      }
+    }
+    
+    function handleCheckboxChange(checkbox, dropdownId) {
+      const dropdown = document.getElementById(dropdownId);
+      if (dropdown) {
+        if (checkbox.checked) {
+          dropdown.style.display = 'block';
+        } else {
+          dropdown.style.display = 'none';
+          removeFromPreferences(dropdownId);
+        }
+      }
+    }
+
+    function toggleAllCheckboxes(selectAllCheckbox) {
+      const checkboxes = document.querySelectorAll('.checkboxes input[type="checkbox"]:not(#select-all)');
+      checkboxes.forEach(checkbox => {
+        const isChecked = selectAllCheckbox.checked;
+        checkbox.checked = isChecked;
+        
+        // Handle dropdowns for all checkboxes
+        if (checkbox.id) {
+          const dropdownId = checkbox.id.replace('-checkbox', '-options');
+          handleCheckboxChange(checkbox, dropdownId);
+        }
+      });
     }
 
     function addToPreferences(sel) {
@@ -299,7 +1087,9 @@
         .map(x => x.trim())
         .filter(x => x && !x.startsWith(cat + ':'));
       arr.push(`${cat}: ${v}`);
-      document.getElementById('preferences-input').value = arr.join(', ');
+      const prefsInput = document.getElementById('preferences-input');
+      prefsInput.value = arr.join(', ');
+      prefsInput.dispatchEvent(new Event('input'));
     }
 
     function removeFromPreferences(id) {
@@ -311,8 +1101,10 @@
         .value.split(',')
         .map(x => x.trim())
         .filter(x => x && x !== `${cat}: ${v}`);
-      document.getElementById('preferences-input').value = arr.join(', ');
+      const prefsInput = document.getElementById('preferences-input');
+      prefsInput.value = arr.join(', ');
       sel.value = '';
+      prefsInput.dispatchEvent(new Event('input'));
     }
 
     function addDistanceColumn() {
@@ -413,12 +1205,11 @@
 
 
     document.getElementById('ask-gpt-btn').addEventListener('click', async () => {
-      const city        = document.querySelector('input[value="Cambridge"]').value;
-      const zip         = document.querySelector('input[value="02142"]').value;
-      const preferences       = document.getElementById('preferences-input').value;
+      const city = document.getElementById('city-input').value;
+      const zip = document.getElementById('zip-input').value;
+      const preferences = document.getElementById('preferences-input').value;
       console.log('🔍 Clicked:', city, zip, preferences);
 
-      //const prompt = `Find helpful places for someone settling into ${city} (${zip}). They are interested in: ${prefs}.`;
       const prompt = `Find helpful places for someone settling into ${city}, ZIP code ${zip}. They are interested in: ${preferences}. Give helpful and clear suggestions with 5 results for each preference type. Return the results ONLY as an HTML table(with no Markdown code fences and NO explanatory text at all) (including <table>, <tr>, <td>, etc.), with columns Name, Address, ZIP code, Latitude, Longitude, Category(School, store, Worship etc -selected preferences), .`;
       const res = await fetch('/ask-gpt', {
         method: 'POST',
@@ -465,214 +1256,510 @@
         searching:true
       });
 
+      // Re-attach row click handlers after DataTables renders
       attachRowClickHandlers();
-
-      //calculate dustace between user and each result
-      function addDistanceColumn2() {
-        if (userLat == null) return; // no geolocation
-
-        const table = document.querySelector('#results table');
-        if (!table) return;
-
-        // 1) Append the new TH to the existing header row
-        let headerRow = table.querySelector('thead tr');
-        if (!headerRow) {
-          headerRow = table.querySelector('tbody tr');
-        }
-        const distTh = document.createElement('th');
-        distTh.textContent = 'Distance (mi)';
-        headerRow.appendChild(distTh);
-
-        // 2) For each data row, compute & append a new TD
-        table.querySelectorAll('tbody tr').forEach(row => {
-          const lat = parseFloat(row.cells[3].textContent);
-          const lng = parseFloat(row.cells[4].textContent);
-          const dMeters = L.latLng(userLat, userLng)
-                          .distanceTo(L.latLng(lat, lng));
-          const dMiles = (dMeters / 1609.344).toFixed(2);
-
-          const cell = row.insertCell(-1);
-          cell.textContent = dMiles;
-          cell.style.textAlign = 'right';
-        });
-      }
-
-      
-      
     });
 
-    //Starter pack button grab
-    document.getElementById('starterbtn').addEventListener('click', async () => {
-      const city        = document.querySelector('input[value="Cambridge"]').value;
-      const zip         = document.querySelector('input[value="02142"]').value;
-      const preferences       = document.getElementById('preferences-input').value;
-      console.log('🔍 Clicked:', city, zip, preferences);
+    // === Leaflet Map Init ===
+    document.addEventListener('DOMContentLoaded', function() {
+      // Disable map controls until map is loaded
+      document.querySelectorAll('.map-control-btn').forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = 0.5;
+        btn.style.pointerEvents = 'none';
+      });
+      const locations = [
+        { name: 'MIT Building 1', lat: 42.3580, lng: -71.0925 }
+      ];
+      window.map = L.map('map').setView(
+        [locations[0].lat, locations[0].lng],
+        13
+      );
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19
+      }).addTo(window.map);
 
-    
-      const prompt = `You are an expert relocation consultant and content designer.  
-        Create a “Move to ${city} ${zip} Starter Pack” tailored to someone whose interests are ${preferences}. Organize your response so it can be turned directly into a PDF. Use clear top-level headings and subheadings, bullet lists, and tables wherever helpful.
+      locations.forEach(loc =>
+        L.marker([loc.lat, loc.lng])
+          .addTo(window.map)
+          .bindPopup(`<strong>${loc.name}</strong>`)
+      );
 
-        1. **Introduction**  
-          A 1–2 sentence overview of what makes ${city} special.
+      // Enable map controls after map is loaded
+      setTimeout(() => {
+        document.querySelectorAll('.map-control-btn').forEach(btn => {
+          btn.disabled = false;
+          btn.style.opacity = 1;
+          btn.style.pointerEvents = '';
+        });
+      }, 500); // fallback for map load
 
-        2. **Essentials**  
-          - Best neighborhoods to live in (with a 1-sentence pros/cons each)  
-          - Average cost of living (rent, utilities) in a small table  
-          - How to get your driver’s license / register to vote / set up a bank account
-
-        3. **Housing**  
-          - Rental vs. purchase checklist  
-          - Top 3 websites/apps to search for homes  
-          - Typical timelines and tips for signing a lease
-
-        4. **Transportation**  
-          - Public transit options (bus, subway, light rail) with average fares  
-          - Rideshare, biking, and parking tips  
-          - Major airports and intercity trains
-
-        5. **Utilities & Services**  
-          - How to set up electricity, water, internet providers  
-          - Estimated monthly costs  
-          - Trash & recycling schedules
-
-        6. **Healthcare & Safety**  
-          - Nearest hospitals and urgent care centers  
-          - Emergency numbers and local safety tips  
-          - Recommended health-insurance navigators
-
-        7. **[PREFERENCE 1]**  
-          *(e.g. Public Schools)*  
-          - Top 5 options with address, website, and commute time  
-          - Enrollment tips and application deadlines
-
-        8. **[PREFERENCE 2]**  
-        *(e.g. African Restaurants)*  
-        - Top 5 spots with address, cuisine style, price range, and rating  
-        - Reservation or delivery info
-
-        9. **Local Culture & Community**
-        - Annual festivals, farmers markets, or community events  
-        - Neighborhood associations or Facebook groups to join
-
-        10. **Quick Tips & Resources**  
-        - A small table of “Must-have apps” (transit app, neighborhood forum, local news)  
-        - A short “Do nots” list to avoid common newcomer pitfalls
-
-        **Formatting instructions:**  
-        - Use # for H1, ## for H2, ### for H3.  
-        - Use bullet lists (-) for items.  
-        - Present any tabular data in Markdown table syntax.  
-        - Keep each section concise (4 to 6 bullets max).
-        
-        Generate the full Markdown below — nothing else. 
-
-        Ensure the result is returned only as HTML with no MARKDOWN syntax(e.g. <table>…</table>) so it can be displayed in a new window.
-        `;
-    
-
-      console.log("🔍 Prompt being sent to /ask-gpt:", prompt);
-
-      const responses = await fetch('/ask-gpt', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt})
+      // Custom icon for user location
+      const userIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
       });
 
-      const starterdata = await responses.json();
-      console.log('raw /ask-gpt response:', starterdata);
-      const replyHtml = starterdata.reply ?? '';  // should be HTML (e.g. <table>…</table>)
+      // Get user's location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          window.userLat = pos.coords.latitude;
+          window.userLng = pos.coords.longitude;
 
-      const cssHref = `${window.location.origin}/styles.css`;
+          L.marker([window.userLat, window.userLng], { icon: userIcon })
+            .addTo(window.map)
+            .bindPopup("You are here")
+            .openPopup();
 
-      // 1) open a new blank window
-      const win = window.open('', '_blank', 'width=800,height=600');
+          window.map.setView([window.userLat, window.userLng], 14, { animate: true });
+        }, err => {
+          console.warn("Geolocation failed:", err);
+        });
+      }
+    });
 
-      // 2) write a basic HTML page into it
-      win.document.write(`
+    // Restore starterbtn event listener, wrapped in a check
+    const starterBtn = document.getElementById('starterbtn');
+    if (starterBtn) {
+      starterBtn.addEventListener('click', async () => {
+        const city = document.getElementById('city-input').value;
+        const zip = document.getElementById('zip-input').value;
+        const preferences = document.getElementById('preferences-input').value;
+        console.log('🔍 Clicked:', city, zip, preferences);
+
+        const prompt = `You are an expert relocation consultant and content designer.  \nCreate a \"Move to ${city} ${zip} Starter Pack\" tailored to someone whose interests are ${preferences}. Return the response in properly formatted HTML with appropriate styling. Include these sections:\n\n1. Introduction\n2. Essentials\n3. Housing\n4. Transportation\n5. Utilities & Services\n6. Healthcare & Safety\n7. Local Culture & Community\n8. Quick Tips & Resources\n\nFormat the response as a beautifully styled HTML document with proper headings, lists, and tables. Use modern styling and ensure good readability.`;
+
+        const responses = await fetch('/ask-gpt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+
+        const starterdata = await responses.json();
+        const replyHtml = starterdata.reply ?? '';
+        const win = window.open('', '_blank', 'width=800,height=600');
+        win.document.write(`
           <!DOCTYPE html>
           <html>
             <head>
-              <base href="${window.location.origin}/" />
-              <title>Starter Pack Preview</title>
-              <link rel="stylesheet" href="${cssHref}" />
+              <title>Starter Pack Preview - ${city} ${zip}</title>
+              <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+              <style>
+                :root {
+                  --primary-color: #123c1c;
+                  --primary-light: #1a5a2a;
+                  --secondary-color: #f6f0e1;
+                  --accent-color: #d7d2ab;
+                  --text-color: #2d3748;
+                  --text-light: #718096;
+                  --border-color: #e2e8f0;
+                }
+                
+                body {
+                  font-family: 'Inter', sans-serif;
+                  line-height: 1.6;
+                  color: var(--text-color);
+                  max-width: 800px;
+                  margin: 0 auto;
+                  padding: 2rem;
+                  background-color: var(--secondary-color);
+                }
+
+                .content-wrapper {
+                  background: white;
+                  padding: 3rem;
+                  border-radius: 12px;
+                  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                }
+
+                h1 {
+                  color: var(--primary-color);
+                  font-size: 2.5rem;
+                  margin-bottom: 2rem;
+                  border-bottom: 4px solid var(--primary-color);
+                  padding-bottom: 1rem;
+                }
+
+                h2 {
+                  color: var(--primary-color);
+                  font-size: 1.8rem;
+                  margin-top: 2.5rem;
+                  margin-bottom: 1.5rem;
+                  border-bottom: 2px solid var(--accent-color);
+                  padding-bottom: 0.5rem;
+                }
+
+                h3 {
+                  color: var(--primary-light);
+                  font-size: 1.4rem;
+                  margin-top: 1.5rem;
+                  margin-bottom: 1rem;
+                }
+
+                p {
+                  margin-bottom: 1.2rem;
+                  font-size: 1.1rem;
+                }
+
+                ul, ol {
+                  margin-bottom: 1.5rem;
+                  padding-left: 1.5rem;
+                }
+
+                li {
+                  margin-bottom: 0.8rem;
+                  font-size: 1.1rem;
+                }
+
+                table {
+                  width: 100%;
+                  border-collapse: collapse;
+                  margin: 1.5rem 0;
+                  background: white;
+                  border-radius: 8px;
+                  overflow: hidden;
+                  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                }
+
+                th, td {
+                  padding: 1rem;
+                  text-align: left;
+                  border-bottom: 1px solid var(--border-color);
+                }
+
+                th {
+                  background-color: var(--primary-color);
+                  color: white;
+                  font-weight: 600;
+                }
+
+                tr:nth-child(even) {
+                  background-color: var(--secondary-color);
+                }
+
+                .print-btn {
+                  position: fixed;
+                  top: 20px;
+                  right: 20px;
+                  z-index: 9999;
+                  background: var(--primary-color);
+                  color: white;
+                  border: none;
+                  border-radius: 8px;
+                  padding: 0.8rem 1.5rem;
+                  font-size: 1.1rem;
+                  font-weight: 500;
+                  cursor: pointer;
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                  transition: all 0.3s ease;
+                }
+
+                .print-btn:hover {
+                  background: var(--primary-light);
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                }
+
+                @media print {
+                  .print-btn { display: none !important; }
+                  body { 
+                    background: white;
+                    padding: 0;
+                  }
+                  .content-wrapper {
+                    box-shadow: none;
+                    padding: 0;
+                  }
+                }
+              </style>
             </head>
             <body>
-              ${replyHtml}
+              <button class="print-btn" onclick="window.print()">Download as PDF</button>
+              <div class="content-wrapper">
+                ${replyHtml}
+              </div>
             </body>
-          </html>`
-        );
-
-        // 3) finish and focus so it renders
+          </html>
+        `);
         win.document.close();
         win.focus();
-        // Render ChatGPT's reply into the results table/container:
-        //document.getElementById('results').innerHTML = data.reply;
-        //attachRowClickHandlers();
+      });
+    }
+
+    // === Chatbox Logic ===
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatbox = document.querySelector('.chatbox');
+      if (!chatbox) return;
+
+      const chatMessages = chatbox.querySelector('.chat-messages');
+      const chatInput = chatbox.querySelector('.chat-input input');
+      const chatSendBtn = chatbox.querySelector('.chat-input button:not(.chat-popout-btn)');
+      const chatPopoutBtn = chatbox.querySelector('.chat-popout-btn');
+      const chatClearBtn = chatbox.querySelector('.chat-clear-btn');
+
+      // Use localStorage for chat history
+      function getHistory() {
+        try {
+          return JSON.parse(localStorage.getItem('settleease_chat_history')) || [];
+        } catch { return []; }
+      }
+      function setHistory(history) {
+        localStorage.setItem('settleease_chat_history', JSON.stringify(history));
+      }
+
+      let chatHistory = getHistory();
+      function renderHistory() {
+        chatMessages.innerHTML = '';
+        if (chatHistory.length === 0) {
+          chatClearBtn.disabled = true;
+          // Show a placeholder message
+          const placeholder = document.createElement('div');
+          placeholder.className = 'message bot';
+          placeholder.textContent = 'How can I help you today?';
+          chatMessages.appendChild(placeholder);
+        } else {
+          chatClearBtn.disabled = false;
+          chatHistory.forEach(msg => appendMessage(msg.content, msg.role === 'user' ? 'user' : 'bot'));
+        }
+        setSendBtnState(); // Ensure send button state is updated after rendering
+      }
+
+      function appendMessage(text, sender = 'user') {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message ' + sender;
+        if (sender === 'bot') {
+          msgDiv.innerHTML = text;
+        } else {
+          msgDiv.textContent = text;
+        }
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function setSendBtnState() {
+        // Disable send if input is empty/whitespace, or if chatInput is disabled
+        chatSendBtn.disabled = chatInput.disabled || !chatInput.value.trim();
+      }
+      chatInput.addEventListener('input', setSendBtnState);
+      setSendBtnState(); // Ensure correct state on initial load
+
+      async function sendMessage() {
+        const userMsg = chatInput.value.trim();
+        if (!userMsg) return;
+        appendMessage(userMsg, 'user');
+        chatHistory.push({ role: 'user', content: userMsg });
+        setHistory(chatHistory);
+        chatInput.value = '';
+        setSendBtnState();
+        chatInput.disabled = true;
+        chatSendBtn.disabled = true;
+
+        // Show AI typing indicator
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message bot';
+        typingDiv.textContent = 'AI is typing...';
+        chatMessages.appendChild(typingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        try {
+          const res = await fetch('/ask-gpt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: chatHistory })
+          });
+          const data = await res.json();
+          typingDiv.remove();
+          appendMessage(data.reply || 'No response.', 'bot');
+          chatHistory.push({ role: 'assistant', content: data.reply });
+          setHistory(chatHistory);
+        } catch (err) {
+          typingDiv.remove();
+          appendMessage('Sorry, there was an error contacting the assistant.', 'bot');
+        } finally {
+          chatInput.disabled = false;
+          chatSendBtn.disabled = false;
+          setSendBtnState();
+          chatInput.focus();
+        }
+      }
+
+      chatSendBtn.addEventListener('click', sendMessage);
+      chatInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          sendMessage();
+        }
       });
 
-      //win.document.close(); // Ensure the document is properly closed
-      //win.focus(); // Bring the new window into focus
-      //});
+      // Popout button logic
+      chatPopoutBtn.addEventListener('click', function() {
+        window.open('chat.html', 'SettleEaseChat', 'width=500,height=700,resizable=yes');
+      });
 
-    // === Leaflet Map Init ===
-    const locations = [
-      { name: 'MIT Building 1', lat: 42.3580, lng: -71.0925 },
-      //{ name: 'Place B', lat: 42.3656, lng: -71.1036 },
-      //{ name: 'MIT Building 1', lat: 42.3580, lng: -71.0925 },
-    ];
-    const map = L.map('map').setView(
-      [locations[0].lat, locations[0].lng],
-      13
-    );
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19
-    }).addTo(map);
+      // Clear chat button logic
+      chatClearBtn.addEventListener('click', function() {
+        localStorage.removeItem('settleease_chat_history');
+        chatHistory = [];
+        renderHistory();
+        setSendBtnState(); // Also update send button state after clearing
+      });
 
-    locations.forEach(loc =>
-      L.marker([loc.lat, loc.lng])
-        .addTo(map)
-        .bindPopup(`<strong>${loc.name}</strong>`)
-    );
+      // Sync with popup/sidebar
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'settleease_chat_history') {
+          chatHistory = getHistory();
+          renderHistory();
+        }
+      });
 
-    //add a custom icon
-    const yourCustomIcon = L.icon({
-      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      iconSize:     [25, 41],  // size of the icon
-      iconAnchor:   [12, 41],  // point of the icon which will correspond to marker's location
-      popupAnchor:  [1, -34],  // where popups should open relative to the iconAnchor
-      shadowSize:   [41, 41]   // optional: size of the shadow
+      // Initial render
+      renderHistory();
+      setSendBtnState(); // Ensure correct state on initial load
     });
 
-    //Include the user's location
-    let userLat=null, userLng=null;
-    navigator.geolocation.getCurrentPosition(pos => {
-    userLat = pos.coords.latitude;
-    userLng = pos.coords.longitude;
+    // Favourites Modal Logic
+    const favBtn = document.getElementById('favourites-btn');
+    const favModal = document.getElementById('favourites-modal');
+    const closeFavModal = document.getElementById('close-favourites-modal');
 
-    L.marker([userLat, userLng], { icon: yourCustomIcon })
-      .addTo(map)
-      .bindPopup("You are here")
-      .openPopup();
-
-    map.setView([userLat, userLng], 14, { animate: true });
-    addDistanceColumn
-    }, err => {
-    console.warn("Geolocation failed:", err);
+    favBtn.addEventListener('click', async () => {
+      favModal.style.display = 'flex';
+      // Fetch favourites from backend
+      try {
+        const res = await fetch('/api/favorites');
+        const data = await res.json();
+        const favourites = data.favorites || [];
+        const tbody = document.getElementById('favourites-list');
+        tbody.innerHTML = '';
+        if (favourites.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#888;">No favourites yet.</td></tr>';
+        } else {
+          const seen = new Set();
+          favourites.forEach(fav => {
+            if (seen.has(fav.name + '|' + fav.category)) return; // Prevent duplicates
+            seen.add(fav.name + '|' + fav.category);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td style="padding:0.5rem 1rem;word-break:break-word;">${fav.name}</td>
+              <td style="padding:0.5rem 1rem;word-break:break-word;">${fav.category || ''}</td>
+              <td style="padding:0.5rem 1rem;word-break:break-word;">
+                <button class="btn btn-danger btn-sm" onclick="removeFavourite(${fav.id})">Remove</button>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+      } catch (err) {
+        document.getElementById('favourites-list').innerHTML = '<tr><td colspan="3" style="text-align:center;color:red;">Failed to load favourites.</td></tr>';
+      }
+    });
+    closeFavModal.addEventListener('click', () => {
+      favModal.style.display = 'none';
+    });
+    favModal.addEventListener('click', (e) => {
+      if (e.target === favModal) favModal.style.display = 'none';
     });
 
-    /* L.marker([latitude, longitude], { icon: yourCustomIcon })
-      .addTo(map)
-      .bindPopup("You are here")
-      .openPopup(); */
+    window.removeFavourite = async function(id) {
+      if (!confirm('Remove this favourite?')) return;
+      await fetch(`/api/favorites/${id}`, { method: 'DELETE' });
+      favBtn.click(); // Refresh the list
+    };
 
-    // optionally recenter the map on the user
-    // map.setView([latitude, longitude], 14);
-    /* }, err => {
-      console.warn("Geolocation failed:", err);
-    }); */
+    // === Search Bar Location Geocoding ===
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.querySelector('.search-bar input[type="text"]');
+      if (!searchInput) return;
+
+      let searchMarker = null;
+
+      searchInput.addEventListener('keydown', async function(e) {
+        if (e.key === 'Enter') {
+          const query = searchInput.value.trim();
+          if (!query) {
+            alert('Please enter a location to search.');
+            return;
+          }
+          // Use Nominatim API for geocoding
+          const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+          try {
+            const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+            const data = await res.json();
+            if (data && data.length > 0) {
+              const lat = parseFloat(data[0].lat);
+              const lon = parseFloat(data[0].lon);
+              // Remove old search marker if exists
+              if (searchMarker && window.map) {
+                window.map.removeLayer(searchMarker);
+              }
+              // Add new marker
+              if (window.map) {
+                searchMarker = L.marker([lat, lon]).addTo(window.map)
+                  .bindPopup(`<strong>${query}</strong>`).openPopup();
+                window.map.setView([lat, lon], 15, { animate: true });
+              }
+            } else {
+              alert('No results found.');
+            }
+          } catch (err) {
+            alert('Error searching for location.');
+          }
+        }
+      });
+    });
+
+    // === User Profile Dynamic Update ===
+    (function() {
+      function updateUserProfile() {
+        fetch('/api/me')
+          .then(res => res.json())
+          .then(data => {
+            if (data.username) {
+              document.getElementById('user-name').textContent = data.username;
+              document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.username)}&background=123c1c&color=fff`;
+            } else {
+              window.location.href = '/login';
+            }
+          })
+          .catch(() => { window.location.href = '/login'; });
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        updateUserProfile();
+        var logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function() {
+            fetch('/logout', { method: 'POST' })
+              .then(() => { window.location.href = '/login'; });
+          });
+        }
+      });
+    })();
+
+    // === Enable/Disable Find Buttons ===
+    function updateFindButtons() {
+      const city = document.getElementById('city-input').value.trim();
+      const zip = document.getElementById('zip-input').value.trim();
+      const prefs = document.getElementById('preferences-input').value.trim();
+      const askBtn = document.getElementById('ask-gpt-btn');
+      const starterBtn = document.getElementById('starterbtn');
+      const enabled = city && zip && prefs;
+      askBtn.disabled = !enabled;
+      starterBtn.disabled = !enabled;
+      askBtn.style.opacity = enabled ? 1 : 0.5;
+      starterBtn.style.opacity = enabled ? 1 : 0.5;
+      askBtn.style.pointerEvents = enabled ? '' : 'none';
+      starterBtn.style.pointerEvents = enabled ? '' : 'none';
+    }
+    document.getElementById('city-input').addEventListener('input', updateFindButtons);
+    document.getElementById('zip-input').addEventListener('input', updateFindButtons);
+    document.getElementById('preferences-input').addEventListener('input', updateFindButtons);
+    updateFindButtons();
+
   </script>
 </body>
 </html>
