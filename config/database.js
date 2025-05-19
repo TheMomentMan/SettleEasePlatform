@@ -1,5 +1,13 @@
 const mysql = require('mysql2/promise');
 
+// === Add this block before creating the pool ===
+console.log('Connecting to MySQL with:', {
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'settleease_user',
+    database: process.env.DB_NAME || 'settleease',
+    port: process.env.DB_PORT
+});
+
 const pool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'settleease_user',

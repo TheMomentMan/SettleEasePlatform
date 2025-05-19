@@ -45,6 +45,8 @@ services:
     restart: always
     ports:
       - 8081:80
+    networks:
+      - settleease-network
 
 networks:
   settleease-network:

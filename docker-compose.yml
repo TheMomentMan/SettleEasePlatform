@@ -6,9 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "8080:3000"           # Map container's 3000 to host's 8080
     volumes:
-      - .:/var/www/html
+      - .:/app                # Mount your code into the container
     depends_on:
       - db
     environment:
@@ -45,6 +45,8 @@ services:
     restart: always
     ports:
       - 8081:80
+    networks:
+      - settleease-network
 
 networks:
   settleease-network:
