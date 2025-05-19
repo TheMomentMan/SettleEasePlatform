@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:3000"           # Map container's 3000 to host's 8080
+      - "8082:3000"           # Map container's 3000 to host's 8080
     volumes:
       - .:/app                # Mount your code into the container
     depends_on:
