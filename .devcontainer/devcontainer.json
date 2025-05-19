@@ -1,6 +1,8 @@
 {
   "name": "SettleEase Development",
-  "dockerComposeFile": "docker-compose.yml",
+   "dockerComposeFile": [
+     "docker-compose.yml"
+   ],
   "service": "app",
   "workspaceFolder": "/var/www/html",
   "forwardPorts": [8080, 3306],
