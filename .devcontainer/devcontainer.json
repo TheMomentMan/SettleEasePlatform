@@ -28,6 +28,5 @@
       }
     }
   },
-  "postCreateCommand": "composer install",
-  "remoteUser": "vscode"
-} 
+  "postCreateCommand": "composer install"
+}
