@@ -34,7 +34,7 @@ services:
       - settleease-network
 
   phpmyadmin:
-    image: arm64v8/phpmyadmin:latest
+    image: phpmyadmin:latest   # <-- CHANGED THIS LINE
     container_name: settleease_phpmyadmin
     links:
       - db
@@ -51,4 +51,4 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data: 
+  mysql_data:
