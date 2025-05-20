@@ -1,11 +1,12 @@
 {
   "name": "SettleEase Development",
-   "dockerComposeFile": [
-     "docker-compose.yml"
-   ],
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
+  
   "service": "app",
-  "workspaceFolder": "/workspaces/SettleEasePlatform2",
-  "forwardPorts": [8080, 3306],
+  "workspaceFolder": "/usr/src/app",
+  "forwardPorts": [8888, 3306, 8081,8082],
   "features": {
     "ghcr.io/devcontainers/features/node:1": {},
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
@@ -13,20 +14,12 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "bmewburn.vscode-intelephense-client",
-        "xdebug.php-debug",
         "mikestead.dotenv",
         "ms-azuretools.vscode-docker",
         "mtxr.sqltools",
-        "mtxr.sqltools-driver-mysql"
-      ],
-      "settings": {
-        "php.validate.enable": true,
-        "php.suggest.basic": false,
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
-      }
+        "mtxr.sqltools-driver-mysql",
+        "dbaeumer.vscode-eslint"
+      ]
     }
-  },
-  "postCreateCommand": "composer install"
+  }
 }

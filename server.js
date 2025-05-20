@@ -15,6 +15,12 @@ const bcrypt = require('bcrypt');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+//extra debugging step
+app.use((req, res, next) => {
+  console.log(`[${req.method}] ${req.url}`);
+  next();
+});
+
 // Debug logging
 console.log('Current directory:', __dirname);
 console.log('Public directory path:', path.join(__dirname, 'public'));
@@ -162,6 +168,8 @@ app.post('/login', (req, res) => {
 
 // === Signup endpoint ===
 app.post('/api/signup', async (req, res) => {
+  fs.appendFileSync('/tmp/signup.log', `Signup route hit at ${new Date().toISOString()} with body: ${JSON.stringify(req.body)}\n`);
+  console.log('Received signup request:', req.body); // <-- Add this as the first line - just for debugging
   try {
     const { username, password } = req.body;
     if (!username || !password) {
