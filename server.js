@@ -13,13 +13,19 @@ const favoritesRouter = require('./routes/favorites');
 const bcrypt = require('bcrypt');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3010;
 
 // Debug logging
 console.log('Current directory:', __dirname);
 console.log('Public directory path:', path.join(__dirname, 'public'));
 console.log('Index.html path:', path.join(__dirname, 'public', 'index.html'));
 
+//another st of debugs
+console.log('Connecting to MySQL with:', {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  database: process.env.DB_NAME
+});
 
 
 // 2) JSON parsing + CORS

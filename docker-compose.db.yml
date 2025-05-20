@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=settleease_db
+      - MYSQL_USER=settleease
+      - MYSQL_PASSWORD=settleease_password
+      - MYSQL_ROOT_PASSWORD=root_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - settleease-network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: settleease_phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8081:80
+    networks:
+      - settleease-network
+
+networks:
+  settleease-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
