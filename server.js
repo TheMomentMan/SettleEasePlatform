@@ -13,7 +13,7 @@ const favoritesRouter = require('./routes/favorites');
 const bcrypt = require('bcrypt');
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 
 // Debug logging
 console.log('Current directory:', __dirname);

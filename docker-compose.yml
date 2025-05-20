@@ -30,6 +30,7 @@ services:
       - MYSQL_ROOT_PASSWORD=root_password
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - settleease-network
 
