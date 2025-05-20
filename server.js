@@ -158,12 +158,39 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-app.post('/login', (req, res) => {
+/* app.post('/login', (req, res) => {
     const { username } = req.body;
     req.session.username = username;
     console.log('Login POST:', { username });
     console.log('Session after login:', req.session);
     res.redirect('/');
+}); */
+
+//debugcodeforlogin
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  console.log('Login attempt:', { username, password });
+  try {
+    const [rows] = await pool.execute('SELECT * FROM users WHERE username = ?', [username]);
+    console.log('DB rows:', rows);
+    if (rows.length === 0) {
+      console.log('User not found');
+      return res.redirect('/login?error=1');
+    }
+    const user = rows[0];
+    console.log('User from DB:', user);
+    const match = await bcrypt.compare(password, user.password_hash);
+    console.log('Password match:', match);
+    if (!match) {
+      console.log('Password does not match');
+      return res.redirect('/login?error=1');
+    }
+    req.session.username = username;
+    res.redirect('/');
+  } catch (err) {
+    console.error('Login error:', err);
+    res.redirect('/login?error=1');
+  }
 });
 
 // === Signup endpoint ===
