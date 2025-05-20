@@ -5,7 +5,7 @@ Settleease is a web application for managing user accounts, favorites, locations
 ## How to get it working
 - run docker-compose -f docker-compose.db.yml up --build
 - run node server.js
-- Browse to https://sturdy-journey-95q4757gqp73p95x-3020.app.github.dev/
+- Browse to https://sturdy-journey-95q4757gqp73p95x-3020.app.github.dev/login
 
 ## Features
 - A searchable map with categorized locations (schools, stores, worship, etc.)
