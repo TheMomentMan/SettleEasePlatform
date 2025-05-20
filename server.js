@@ -13,47 +13,14 @@ const favoritesRouter = require('./routes/favorites');
 const bcrypt = require('bcrypt');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-//extra debugging step
-app.use((req, res, next) => {
-  console.log(`[${req.method}] ${req.url}`);
-  next();
-});
-
-app.get('/test-log', (req, res) => {
-  console.log('Test log route hit');
-  res.send('Logged!');
-});
+const PORT = process.env.PORT || 4000;
 
 // Debug logging
 console.log('Current directory:', __dirname);
 console.log('Public directory path:', path.join(__dirname, 'public'));
 console.log('Index.html path:', path.join(__dirname, 'public', 'index.html'));
 
-// Login route
-app.get('/login', (req, res) => {
-  console.log('Request received for /login');
-  const loginPath = path.join(__dirname, 'public', 'login.html');
-  console.log('Attempting to send file:', loginPath);
-  
-  if (!fs.existsSync(loginPath)) {
-    console.error('Login file does not exist:', loginPath);
-    return res.status(404).send('Login page not found');
-  }
 
-  res.sendFile(loginPath, (err) => {
-    if (err) {
-      console.error('Error sending login file:', err);
-      res.status(500).send('Error loading login page');
-    }
-  });
-});
-
-// 1) serve your frontend from /public
-app.use(express.static(path.join(__dirname, 'public'), {
-  extensions: ['html', 'htm']
-}));
 
 // 2) JSON parsing + CORS
 app.use(express.json());
@@ -70,6 +37,16 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
     cookie: { secure: process.env.NODE_ENV === 'production' }
+}));
+
+app.get('/test-log', (req, res) => {
+  console.log('Test log route hit');
+  res.send('Logged!');
+});
+
+// 1) serve your frontend from /public
+app.use(express.static(path.join(__dirname, 'public'), {
+  extensions: ['html', 'htm']
 }));
 
 // 3) health-check (optional)
@@ -92,27 +69,49 @@ app.get('/', (req, res) => {
   });
 });
 
+// Login route
+app.get('/login', (req, res) => {
+  console.log('Request received for /login');
+  const loginPath = path.join(__dirname, 'public', 'login.html');
+  console.log('Attempting to send file:', loginPath);
+  
+  if (!fs.existsSync(loginPath)) {
+    console.error('Login file does not exist:', loginPath);
+    return res.status(404).send('Login page not found');
+  }
 
+  res.sendFile(loginPath, (err) => {
+    if (err) {
+      console.error('Error sending login file:', err);
+      res.status(500).send('Error loading login page');
+    }
+  });
+});
 
 // Login form submission
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
   try {
+    console.log('Login raw body:', req.body);
+    const { username, password } = req.body || {};
+    console.log('Login attempt:', { username, password });
     const [rows] = await pool.execute('SELECT * FROM users WHERE username = ?', [username]);
+    console.log('DB rows:', rows);
     if (rows.length === 0) {
-      // User not found
+      console.log('User not found');
       return res.redirect('/login?error=1');
     }
     const user = rows[0];
+    console.log('User from DB:', user);
     const match = await bcrypt.compare(password, user.password_hash);
+    console.log('Password match:', match);
     if (!match) {
-      // Password does not match
+      console.log('Password does not match');
       return res.redirect('/login?error=1');
     }
     req.session.username = username;
     res.redirect('/');
   } catch (err) {
-    console.error('Login error:', err);
+    console.error('Login route error:', err);
     res.redirect('/login?error=1');
   }
 });
@@ -161,9 +160,9 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-/*app.get('/login', (req, res) => {
+app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});*/
+});
 
 /* app.post('/login', (req, res) => {
     const { username } = req.body;
@@ -173,37 +172,8 @@ app.get('/', (req, res) => {
     res.redirect('/');
 }); */
 
-//debugcodeforlogin
-app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  console.log('Login attempt:', { username, password });
-  try {
-    const [rows] = await pool.execute('SELECT * FROM users WHERE username = ?', [username]);
-    console.log('DB rows:', rows);
-    if (rows.length === 0) {
-      console.log('User not found');
-      return res.redirect('/login?error=1');
-    }
-    const user = rows[0];
-    console.log('User from DB:', user);
-    const match = await bcrypt.compare(password, user.password_hash);
-    console.log('Password match:', match);
-    if (!match) {
-      console.log('Password does not match');
-      return res.redirect('/login?error=1');
-    }
-    req.session.username = username;
-    res.redirect('/');
-  } catch (err) {
-    console.error('Login error:', err);
-    res.redirect('/login?error=1');
-  }
-});
-
 // === Signup endpoint ===
-app.post('/api/signup', async (req, res) => {
-  //fs.appendFileSync('/tmp/signup.log', `Signup route hit at ${new Date().toISOString()} with body: ${JSON.stringify(req.body)}\n`);
-  console.log('Received signup request:', req.body); // <-- Add this as the first line - just for debugging
+/* app.post('/api/signup', async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -221,6 +191,34 @@ app.post('/api/signup', async (req, res) => {
       'INSERT INTO users (username, email, password_hash) VALUES (?, NULL, ?)',
       [username, hash]
     );
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Signup error:', err);
+    res.status(500).json({ success: false, message: 'Signup failed. Please try again.' });
+  }
+}); */
+
+app.post('/api/signup', async (req, res) => {
+  console.log('Received signup request:', req.body);
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ success: false, message: 'Username and password required.' });
+    }
+    // Check if username already exists
+    const [rows] = await pool.execute('SELECT id FROM users WHERE username = ?', [username]);
+    if (rows.length > 0) {
+      console.log('Signup error: Username already taken');
+      return res.status(409).json({ success: false, message: 'Username already taken.' });
+    }
+    // Hash the password
+    const hash = await bcrypt.hash(password, 10);
+    // Insert the new user (email is NULL)
+    await pool.execute(
+      'INSERT INTO users (username, email, password_hash) VALUES (?, NULL, ?)',
+      [username, hash]
+    );
+    console.log('Signup successful for:', username);
     res.json({ success: true });
   } catch (err) {
     console.error('Signup error:', err);
