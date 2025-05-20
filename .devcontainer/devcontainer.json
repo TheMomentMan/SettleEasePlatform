@@ -6,7 +6,7 @@
   
   "service": "app",
   "workspaceFolder": "/usr/src/app",
-  "forwardPorts": [8888, 3306, 8081,8082],
+  "forwardPorts": [8092, 3306, 8081,8082],
   "features": {
     "ghcr.io/devcontainers/features/node:1": {},
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}

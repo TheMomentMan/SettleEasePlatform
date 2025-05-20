@@ -21,10 +21,34 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/test-log', (req, res) => {
+  console.log('Test log route hit');
+  res.send('Logged!');
+});
+
 // Debug logging
 console.log('Current directory:', __dirname);
 console.log('Public directory path:', path.join(__dirname, 'public'));
 console.log('Index.html path:', path.join(__dirname, 'public', 'index.html'));
+
+// Login route
+app.get('/login', (req, res) => {
+  console.log('Request received for /login');
+  const loginPath = path.join(__dirname, 'public', 'login.html');
+  console.log('Attempting to send file:', loginPath);
+  
+  if (!fs.existsSync(loginPath)) {
+    console.error('Login file does not exist:', loginPath);
+    return res.status(404).send('Login page not found');
+  }
+
+  res.sendFile(loginPath, (err) => {
+    if (err) {
+      console.error('Error sending login file:', err);
+      res.status(500).send('Error loading login page');
+    }
+  });
+});
 
 // 1) serve your frontend from /public
 app.use(express.static(path.join(__dirname, 'public'), {
@@ -68,24 +92,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Login route
-app.get('/login', (req, res) => {
-  console.log('Request received for /login');
-  const loginPath = path.join(__dirname, 'public', 'login.html');
-  console.log('Attempting to send file:', loginPath);
-  
-  if (!fs.existsSync(loginPath)) {
-    console.error('Login file does not exist:', loginPath);
-    return res.status(404).send('Login page not found');
-  }
 
-  res.sendFile(loginPath, (err) => {
-    if (err) {
-      console.error('Error sending login file:', err);
-      res.status(500).send('Error loading login page');
-    }
-  });
-});
 
 // Login form submission
 app.post('/login', async (req, res) => {
@@ -154,9 +161,9 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/login', (req, res) => {
+/*app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
+});*/
 
 /* app.post('/login', (req, res) => {
     const { username } = req.body;
@@ -195,7 +202,7 @@ app.post('/login', async (req, res) => {
 
 // === Signup endpoint ===
 app.post('/api/signup', async (req, res) => {
-  fs.appendFileSync('/tmp/signup.log', `Signup route hit at ${new Date().toISOString()} with body: ${JSON.stringify(req.body)}\n`);
+  //fs.appendFileSync('/tmp/signup.log', `Signup route hit at ${new Date().toISOString()} with body: ${JSON.stringify(req.body)}\n`);
   console.log('Received signup request:', req.body); // <-- Add this as the first line - just for debugging
   try {
     const { username, password } = req.body;

@@ -13,8 +13,9 @@ const pool = mysql.createPool({
     user: process.env.DB_USER || 'settleease_user',
     password: process.env.DB_PASSWORD || 'settleease_password',
     database: process.env.DB_NAME || 'settleease',
+    port: process.env.DB_PORT || 3306, // Default MySQL port
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 10,    
     queueLimit: 0,
     // Add these for better connection handling in Codespaces
     enableKeepAlive: true,
